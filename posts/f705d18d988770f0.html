@@ -1,0 +1,204 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>使用 Xcode 8 构建版本 iTunes Connect 获取不到应用程序的状态的解决办法 [ Jvaeyhcd&#39;s Note ]</title>
+  <link rel="shortcut icon" href="/img/favicon.ico">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  
+    <!-- stylesheets list from _config.yml -->
+    
+      <link rel="stylesheet" href="/css/dexo.css">
+    
+      <link rel="stylesheet" href="/css/custom.css">
+    
+      <link rel="stylesheet" href="/css/post.css">
+    
+      <link rel="stylesheet" href="/css/page.css">
+    
+      <link rel="stylesheet" href="/css/layout.css">
+    
+      <link rel="stylesheet" href="/css/font-awesome.min.css">
+    
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+<body>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+<div class="layout-container">
+  <div class="layout-header">
+    
+
+<div class="main-nav">
+  
+  <div class="container">
+    <header class="group top-nav">
+      <nav class="navbar logo-w navbar-left">
+        <a href="/" class="logo">Jvaeyhcd's Note</a>
+      </nav>
+      <div class="navigation-toggle" onClick="hideShowMenu()">
+        <span class="logo">Jvaeyhcd's Note</span>
+      </div>
+      <nav id="navbar-menu" class="navbar item-nav navbar-right">
+        <ul>
+          
+            <li><a href="/">Home</a></li>
+          
+            <li><a href="/archives">Archives</a></li>
+          
+            <li><a href="/tag">Tags</a></li>
+          
+            <li><a target="_blank" rel="noopener" href="https://github.com/Jvaeyhcd">Github</a></li>
+          
+        </ul>
+      </nav>
+    </header>
+  </div>
+</div>
+  </div>
+  <div class="layout-content">
+    <div id="content-outer" class="container container-box">
+      <div id="content-inner" class="content-view">
+        <div class="post-content-box">
+  <article id="post" class="post-detail-box box-section shadow">
+    <div class="post-title">
+      使用 Xcode 8 构建版本 iTunes Connect 获取不到应用程序的状态的解决办法
+    </div>
+    <div class="post-base-box">
+      <time datetime="2016-09-20T05:19:33.000Z">
+        Posted on 2016-09-20
+      </time>
+      
+      <span id="busuanzi_container_page_pv">
+        &nbsp;visitors <span id="busuanzi_value_page_pv"></span>
+      </span>
+    </div>
+    <div class="post-body">
+      <p>iOS10正式版本已发布，Xcode8也跟着就发布了，于是我就在第一时间将Xcode8和iOS10都更新了。但是一波需要适配的问题就来，有Xib的问题，还有很多界面上的问题，在iOS10上根本不能看。<br>通过半天的修改终于把界面适配好了，这时我以为iOS10的适配应该就到此为止了，于是我就Archive生成Release版本的ipa并将其提交到iTunesConnect，一切都是那么的顺利。然而事实并不是这样的，上传成功后我打开iTunesConnect网站登录我的开发账号，准备提交版本更新，然而我却找不到我之前提交的ipa。在app下的“活动”栏中的“所有构建版本”也没有我之前提交的版本。（这时我心想，我明明在Xcode中显示提交成功，为什么iTunesConnect中却不显示了，苹果也没有给出任何提示）</p>
+<p>我发现构建版本左边的“+”号可点，点开“+”号后发现：</p>
+<img src="/posts/f705d18d988770f0/905614-c52750828b24f91e.png" class="">
+<!-- ![](http://upload-images.jianshu.io/upload_images/905614-c52750828b24f91e.png) -->
+<span id="more"></span>
+<p>上面显示我之前提交的几个版本都是无效的，但是在Xcode提交时成功的啊，如果失败也应该给个提示啊。这次却没有任何提示，这肯定不应该啊，每次iTunesConnect中app的状态发生变化，苹果都会发送邮件的，于是我去查阅了一下苹果的邮件，还真有。邮件中有明确的写明：</p>
+<img src="/posts/f705d18d988770f0/905614-7e346e4ec6a37fa2.png" class="">
+<!-- ![](http://upload-images.jianshu.io/upload_images/905614-7e346e4ec6a37fa2.png) -->
+
+<p>于是我重新打开项目在Info.plist中添加了如下配置：</p>
+<img src="/posts/f705d18d988770f0/905614-9df0785347c9212e.png" class="">
+<!-- ![](http://upload-images.jianshu.io/upload_images/905614-9df0785347c9212e.png) -->
+
+<blockquote>
+<p>在iOS10上如果没有上述配置就使用相机、相册、麦克风程序会闪退的。</p>
+</blockquote>
+<p>不知道还有没有其他原因，反正我就是这样解决的，再次做个笔记，同样也希望可以帮助到遇到相同问题的各位同行们。</p>
+
+    </div>
+  </article>
+
+  <ul class="post-pager">
+    
+    <li class="previous">
+      <a href="/posts/c0f2c0ac4dc26ecc.html">← Previous Post</a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/posts/720308c7cbe4e8d5.html">Next Post →</a>
+    </li>
+    
+  </ul>
+
+  <div class="box-section shadow box-comment">
+    <!-- 
+  <section class="disqus-comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </section>
+
+  <script>
+    var disqus_shortname = 'jvaeyhcd';
+    
+    var disqus_url = 'https://jvaeyhcd.github.io/posts/f705d18d988770f0.html';
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+  <script id="dsq-count-scr" src="//jvaeyhcd.disqus.com/count.js" async></script>
+
+
+ -->
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<div id="gitalk-container"></div>
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '29d526fe1e0f29d6b28c',
+        clientSecret: '1e5c674f3cbce0ba7d19045138d69ef800d5bd21',
+        id: window.location.pathname,
+        repo: 'jvaeyhcd.github.io',
+        owner: 'Jvaeyhcd',
+        admin: 'Jvaeyhcd'
+    })
+    gitalk.render('gitalk-container')
+</script>
+  </div>
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="layout-footer">
+    <div id="bottom-outer" class="container">
+  <div id="bottom-inner">
+    <span>
+    &copy; 2016-2022 Jvaeyhcd using
+    <a style="color:#007fff;" target="_blank" rel="noopener" href="http://hexo.io">Hexo</a>.
+    </span>
+    
+      <div class="busuanzi-box">
+        <!-- 不蒜子统计 -->
+        <span id="busuanzi_container_site_pv">
+                本站总访问量<span id="busuanzi_value_site_pv"></span>次
+        </span>
+        <span class="post-meta-divider">|</span>
+        <span id="busuanzi_container_site_uv" style='display:none'>
+                本站访客数<span id="busuanzi_value_site_uv"></span>人
+        </span>
+      </div>
+    
+    <a class="footer-icon" target="_blank" rel="noopener" href="https://github.com/Jvaeyhcd"><i class="fab fa-github"></i></a>
+  </div>
+</div>
+<link href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css" rel="stylesheet">
+<button id="totop" class="back-top">
+  <i class="icon ion-md-arrow-dropup"></i>
+</button>
+
+<script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
+<script src="/js/back-top.js"></script>
+
+  </div>
+</div>
+
+
+
+  <!-- scripts list from theme config.yml -->
+  
+    <script src="/js/dexo.js"></script>
+  
+    <script src="/js/helper.js"></script>
+  
+
+
+</body>
+</html>

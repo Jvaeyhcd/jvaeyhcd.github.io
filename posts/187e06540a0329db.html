@@ -1,0 +1,296 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>【iOS】Runtime详解 [ Jvaeyhcd&#39;s Note ]</title>
+  <link rel="shortcut icon" href="/img/favicon.ico">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  
+    <!-- stylesheets list from _config.yml -->
+    
+      <link rel="stylesheet" href="/css/dexo.css">
+    
+      <link rel="stylesheet" href="/css/custom.css">
+    
+      <link rel="stylesheet" href="/css/post.css">
+    
+      <link rel="stylesheet" href="/css/page.css">
+    
+      <link rel="stylesheet" href="/css/layout.css">
+    
+      <link rel="stylesheet" href="/css/font-awesome.min.css">
+    
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+<body>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+<div class="layout-container">
+  <div class="layout-header">
+    
+
+<div class="main-nav">
+  
+  <div class="container">
+    <header class="group top-nav">
+      <nav class="navbar logo-w navbar-left">
+        <a href="/" class="logo">Jvaeyhcd's Note</a>
+      </nav>
+      <div class="navigation-toggle" onClick="hideShowMenu()">
+        <span class="logo">Jvaeyhcd's Note</span>
+      </div>
+      <nav id="navbar-menu" class="navbar item-nav navbar-right">
+        <ul>
+          
+            <li><a href="/">Home</a></li>
+          
+            <li><a href="/archives">Archives</a></li>
+          
+            <li><a href="/tag">Tags</a></li>
+          
+            <li><a target="_blank" rel="noopener" href="https://github.com/Jvaeyhcd">Github</a></li>
+          
+        </ul>
+      </nav>
+    </header>
+  </div>
+</div>
+  </div>
+  <div class="layout-content">
+    <div id="content-outer" class="container container-box">
+      <div id="content-inner" class="content-view">
+        <div class="post-content-box">
+  <article id="post" class="post-detail-box box-section shadow">
+    <div class="post-title">
+      【iOS】Runtime详解
+    </div>
+    <div class="post-base-box">
+      <time datetime="2018-08-08T01:50:48.000Z">
+        Posted on 2018-08-08
+      </time>
+      
+        <div class="category-item">
+          In
+          <a class="category-link-grey-link" href="/categories/iOS%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">iOS学习笔记</a>
+        </div>
+      
+      <span id="busuanzi_container_page_pv">
+        &nbsp;visitors <span id="busuanzi_value_page_pv"></span>
+      </span>
+    </div>
+    <div class="post-body">
+      <p>做了很久的iOS开发了，但依然还是没有将一些基础的知识弄清楚，想要真正的掌握一门技术或则语言，真的不能一知半解，就像你说你熟练掌握了iOS的开发，但是如果别人问你什么是Runtime，它的原理是什么，如果这你都不知道真的算不上对iOS已经熟练掌握了。以前一直有一个误区，拿到一门语言或则技术直接就开始写东西了，但是对很多的原理都是一知半解，以致于忽略了很多基本知识，这篇笔记我要将我丢掉runtime的一些知识都捡起来。</p>
+<h2 id="Runtime简介"><a href="#Runtime简介" class="headerlink" title="Runtime简介"></a>Runtime简介</h2><blockquote>
+<p>Objective-C是一门动态语言，它将很多静态语言在编译和链接时期做的事情放到了运行时来处理。对于Objective-C来说，这个Runtime就像是一个操作系统一样，它让所有的工作可以正常运行。Runtime简称运行时。Objective-C就是运行时机制，也就是在运行时的一些机制，最主要的就是消息机制。</p>
+</blockquote>
+<ul>
+<li>对于C语言，函数的调用在编译的时候会决定调用那个函数。</li>
+<li>对于Objective-C的函数，属于动态调用过程，在编译的时候并不能真正的决定调用哪个函数，只有真正运行的时候才会根据函数的名称找到对应的函数来调用。</li>
+</ul>
+<span id="more"></span>
+
+<h2 id="Runtime消息传递"><a href="#Runtime消息传递" class="headerlink" title="Runtime消息传递"></a>Runtime消息传递</h2><p>一个对象的方法像这样<code>[obj foo]</code>，编译器转成消息发送<code>objc_msgSend(obj, foo)</code>，Runtime时的执行流程是这样的：</p>
+<ul>
+<li>首先，通过它的<code>obj</code>的<code>isa</code>指针找到它的<code>class</code>；</li>
+<li>在<code>class</code>的<code>method_list</code>中找到<code>foo</code>方法；</li>
+<li>如果<code>class</code>中没有找到<code>foo</code>，就继续往它的<code>super_class</code>中找；</li>
+<li>一旦找到<code>foo</code>这个函数，就去执行它的实现<code>IMP</code>（如果还是找不到就会报<code>unrecognized selector</code>的错）。</li>
+</ul>
+<h3 id="类对象（objc-class）"><a href="#类对象（objc-class）" class="headerlink" title="类对象（objc_class）"></a>类对象（objc_class）</h3><p>Objective-C类是由Class类型来表示，它实际上是指向objc_class结构体的一个指针。</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> objc_class *Class</span><br></pre></td></tr></table></figure>
+
+<p>查看<code>objc/runtime.h</code>文件中objc_class结构体的定义如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 类</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">objc_class</span> &#123;</span></span><br><span class="line">    Class _Nonnull isa  OBJC_ISA_AVAILABILITY;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> !__OBJC2__</span></span><br><span class="line">    Class _Nullable super_class                              OBJC2_UNAVAILABLE;   <span class="comment">// 父类</span></span><br><span class="line">    <span class="type">const</span> <span class="type">char</span> * _Nonnull name                               OBJC2_UNAVAILABLE;   <span class="comment">// 类名</span></span><br><span class="line">    <span class="type">long</span> version                                             OBJC2_UNAVAILABLE;   <span class="comment">// 类的版本信息，默认为0</span></span><br><span class="line">    <span class="type">long</span> info                                                OBJC2_UNAVAILABLE;   <span class="comment">// 类信息，供运行期使用的一些位标识</span></span><br><span class="line">    <span class="type">long</span> instance_size                                       OBJC2_UNAVAILABLE;   <span class="comment">// 类的实例变量大小</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">objc_ivar_list</span> * _<span class="title">Nullable</span> <span class="title">ivars</span>                  <span class="title">OBJC2_UNAVAILABLE</span>;</span>   <span class="comment">// 该类的成员变量链表</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">objc_method_list</span> * _<span class="title">Nullable</span> * _<span class="title">Nullable</span> <span class="title">methodLists</span>                    <span class="title">OBJC2_UNAVAILABLE</span>;</span>   <span class="comment">// 方法定义的链表</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">objc_cache</span> * _<span class="title">Nonnull</span> <span class="title">cache</span>                       <span class="title">OBJC2_UNAVAILABLE</span>;</span>   <span class="comment">// 方法缓存</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">objc_protocol_list</span> * _<span class="title">Nullable</span> <span class="title">protocols</span>          <span class="title">OBJC2_UNAVAILABLE</span>;</span>   <span class="comment">// 协议链表</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">&#125; OBJC2_UNAVAILABLE;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 方法</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">objc_method</span> &#123;</span></span><br><span class="line">    SEL _Nonnull method_name                                 OBJC2_UNAVAILABLE;</span><br><span class="line">    <span class="type">char</span> * _Nullable method_types                            OBJC2_UNAVAILABLE;</span><br><span class="line">    IMP _Nonnull method_imp                                  OBJC2_UNAVAILABLE;</span><br><span class="line">&#125;                                                            OBJC2_UNAVAILABLE;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 方法列表</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">objc_method_list</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">objc_method_list</span> * _<span class="title">Nullable</span> <span class="title">obsolete</span>             <span class="title">OBJC2_UNAVAILABLE</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> method_count                                         OBJC2_UNAVAILABLE;</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> __LP64__</span></span><br><span class="line">    <span class="type">int</span> space                                                OBJC2_UNAVAILABLE;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">    <span class="comment">/* variable length structure */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">objc_method</span> <span class="title">method_list</span>[1]                        <span class="title">OBJC2_UNAVAILABLE</span>;</span></span><br><span class="line">&#125;                                                            OBJC2_UNAVAILABLE;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="实例（objc-object）"><a href="#实例（objc-object）" class="headerlink" title="实例（objc_object）"></a>实例（objc_object）</h3><p>objc_object是表示一个类的实例的结构体，在<code>objc/objc.h</code>文件中定义如下：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> objc_class *Class;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> objc_object &#123;</span><br><span class="line">    Class _Nonnull isa  OBJC_ISA_AVAILABILITY;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> objc_object *<span class="type">id</span>;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到这个结构体只有一个字段，及指向其类的isa指针。这样当我们向一个Objective-C对象发送消息时，Runtime库会根据实例对象的isa指针找到这个实例对象所属的类。Runtime库会在类方法列表以及父类的方法列表中去寻找消息对应的selector指向的方法，找到后即运行这个方法。</p>
+<h3 id="元类-Meta-Class"><a href="#元类-Meta-Class" class="headerlink" title="元类(Meta Class)"></a>元类(Meta Class)</h3><p>类对象中的元数据存储的是如何创建一个实例的相关信息，类对象和类方法都应该从哪里创建呢？就是从isa指针指向的结构体创建，类对象的isa指针指向的我们称之为元类（Meta Class），元类中保存了创建类对象以及类方法所需的所有信息。因此整个结构应该如下图所示：</p>
+<img src="/posts/187e06540a0329db/1628088a3e4f0167.png" class="" title="Meta Class">
+
+<p>通过上图我们可以看出整个体系构成了一个自闭环，<code>struct objc_object</code>结构体实例它的isa指针指向类对象，类对象的isa指向了元类，<code>super_class</code>指向了父类的类对象，而元类的<code>super_class</code>指向了父类的元类，那元类的isa又指向了自己。</p>
+<p>元类（Meta Class）是一个类对象的类。所有的类自身也是一个对象，我们可以向这个对象发送消息（即调用方法）。为了调用方法，这个类的isa指针必须指向一个包含类方法的一个<code>objc_class</code>结构体。这就引入了Meta Class概念，元类中保存了创建类对象以及类方法需要的所有信息。任何<code>NSObject</code>集成体系下的<code>meta-class</code>都使用<code>NSObject</code>的<code>meta-class</code>作为自己的所属类，而基类的<code>meta-class</code>的isa指向它自己。</p>
+<h3 id="Method-objc-method"><a href="#Method-objc-method" class="headerlink" title="Method(objc_method)"></a>Method(objc_method)</h3><p>在<code>objc/runtime.h</code>中的定义如下：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 方法</span></span><br><span class="line"><span class="keyword">struct</span> objc_method &#123;</span><br><span class="line">    SEL _Nonnull method_name                                 OBJC2_UNAVAILABLE;   <span class="comment">// 方法名</span></span><br><span class="line">    <span class="type">char</span> * _Nullable method_types                            OBJC2_UNAVAILABLE;   <span class="comment">// 方法类型</span></span><br><span class="line">    IMP _Nonnull method_imp                                  OBJC2_UNAVAILABLE;   <span class="comment">// 方法实现</span></span><br><span class="line">&#125;         </span><br></pre></td></tr></table></figure>
+<p><code>Method</code>和我们平时理解的函数是一致的，就是表示能够独立完成一个功能的一段代码，比如：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="type">void</span>)logName</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;name&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面这段代码就是一个函数。</p>
+<p>在<code>objc_method</code>的结构体中，看到了<code>SEL</code>和<code>IMP</code>，说明<code>SEL</code>和<code>IMP</code>其实都是<code>Method</code>的属性。</p>
+<h3 id="SEL-objc-selector"><a href="#SEL-objc-selector" class="headerlink" title="SEL(objc_selector)"></a>SEL(objc_selector)</h3><p>在<code>objc/objc.h</code>中的定义为：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// An opaque type that represents a method selector.</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> objc_selector *SEL;</span><br></pre></td></tr></table></figure>
+
+<p><code>objc_msgSend</code>函数第二个参数类型为<code>SEL</code>，它是<code>selector</code>在<code>Objective-C</code>中的表示类型。<code>selector</code>是方法选择器，可以理解为区分方法的<code>ID</code>，而这个<code>ID</code>的数据结构是<code>SEL</code>：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">@property</span> SEL selector;</span><br></pre></td></tr></table></figure>
+<p>可以看到<code>selector</code>是<code>SEL</code>的一个实例。</p>
+<p>其实<code>selector</code>就是映射到方法的C字符串，你可以用<code>Objective-C</code>编译器命令<code>@selector()</code>或则Runtime系统的<code>sel_registerName</code>函数来获得一个<code>SEL</code>类型的方法选择器。</p>
+<p><code>selector</code>既然是一个string，我觉得应该是类似于<code>className+MethodName</code>的组合，命名规则有两条：</p>
+<ul>
+<li>同一个类，selector不能重复</li>
+<li>不同的类，selector可以重复</li>
+</ul>
+<p>所以在Objective-C中如下的代码会报错：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="type">void</span>)caculate(<span class="built_in">NSInteger</span>)num;</span><br><span class="line">- (<span class="type">void</span>)caculate(<span class="built_in">CGFloat</span>)num;</span><br></pre></td></tr></table></figure>
+<p>只能通过方法名来进行区别：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="type">void</span>)caculateWithInt(<span class="built_in">NSInteger</span>)num;</span><br><span class="line">- (<span class="type">void</span>)caculateWithFloat(<span class="built_in">CGFloat</span>)num;</span><br></pre></td></tr></table></figure>
+
+<h3 id="IMP"><a href="#IMP" class="headerlink" title="IMP"></a>IMP</h3><p>在<code>objc/objc.h</code>中IMP的定义如下：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// A pointer to the function of a method implementation. </span></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> !OBJC_OLD_DISPATCH_PROTOTYPES</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="type">void</span> (*IMP)(<span class="type">void</span> <span class="comment">/* id, SEL, ... */</span> ); </span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line"><span class="keyword">typedef</span> <span class="type">id</span> _Nullable (*IMP)(<span class="type">id</span> _Nonnull, SEL _Nonnull, ...); </span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+<p>就是指向最终实现程序函数的内存地址的指针。</p>
+<p>在<code>iOS</code>的<code>Runtime</code>中，<code>Method</code>通过<code>SEL</code>和<code>IMP</code>两个属性，实现了快速方法的查询以及实现，相对提高了性能又保持了灵活性。</p>
+<h3 id="类缓存-objc-cache"><a href="#类缓存-objc-cache" class="headerlink" title="类缓存(objc_cache)"></a>类缓存(objc_cache)</h3><p>当Objective-C运行时通过跟踪它的isa指针检查对象时，它可以找到一个实现多个方法的对象。然而你只调用其中的以一小部分，并且每次检查时，搜索所有选择器的分派表没有意义。所以实现一个缓存，每当你搜索一个类分派表，并找到相应的选择器，它把它放入缓存。所以当<code>objc_msgSend</code>查找一个类的选择器，它首先搜索缓存。</p>
+<p>为了加速消息分发，系统会对方法和对应的地址进行缓存，就放在上面所述的<code>objc_cache</code>，所以在实际运行中，大部分常用的方法都会被缓存起来，<code>Runtime</code>系统实际上非常快，接近于直接执行内存地址程序的速度。</p>
+<h3 id="Category-objc-category"><a href="#Category-objc-category" class="headerlink" title="Category(objc_category)"></a>Category(objc_category)</h3><p>在<code>obj/runtime.h</code>中<code>objc_category</code>的定义如下：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> objc_category &#123;</span><br><span class="line">    <span class="type">char</span> * _Nonnull category_name                            OBJC2_UNAVAILABLE;   <span class="comment">// 分类名</span></span><br><span class="line">    <span class="type">char</span> * _Nonnull class_name                               OBJC2_UNAVAILABLE;   <span class="comment">// 分类所属的类名</span></span><br><span class="line">    <span class="keyword">struct</span> objc_method_list * _Nullable instance_methods     OBJC2_UNAVAILABLE;   <span class="comment">// 实例方法列表</span></span><br><span class="line">    <span class="keyword">struct</span> objc_method_list * _Nullable class_methods        OBJC2_UNAVAILABLE;   <span class="comment">// 类方法列表</span></span><br><span class="line">    <span class="keyword">struct</span> objc_protocol_list * _Nullable protocols          OBJC2_UNAVAILABLE;   <span class="comment">// 分类所现实的协议列表</span></span><br><span class="line">&#125;     </span><br></pre></td></tr></table></figure>
+<p>从上面的<code>objc_category</code>的结构体可以看出，分类中可以添加实例方法、类方法，甚至可以实现协议，不能添加实例变量和属性。</p>
+<h2 id="Runtime消息转发"><a href="#Runtime消息转发" class="headerlink" title="Runtime消息转发"></a>Runtime消息转发</h2><p>上面Runtime消息传递中已经介绍了一次发送消息会在相关的类对象中搜索方法列表，如果找不到则会沿着继承树向上一直搜索直到继承树根部（通常为NSObject），如果还是找不到并且消息转发都失败了就会执行<code>doesNotRecognizeSelector:</code>方法报<code>unrecognized selector</code>错。</p>
+<p>因此对于对象尝试调用未实现的方法会报错，遇到这种情况会不会有什么“补救措施”，当然有，这就需要了解消息的转发机制。</p>
+<p>当没有找到实现方法时，会调用一下函数：</p>
+<ul>
+<li>动态方法解析<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">+(<span class="type">BOOL</span>)resolveInstanceMethod:(SEL)sel</span><br><span class="line">+(<span class="type">BOOL</span>)resolveClassMethod:(SEL)sel</span><br></pre></td></tr></table></figure></li>
+<li>备用接受者<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-(<span class="type">id</span>)forwardingTargetForSelector:(SEL)aSelector</span><br></pre></td></tr></table></figure></li>
+<li>完整地消息转发<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-(<span class="built_in">NSMethodSignature</span>*)methodSignatureForSelector:(SEL)aSelector</span><br><span class="line">-(<span class="type">void</span>)forwardInvocation:(<span class="built_in">NSInvocation</span> *)anInvocation</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>消息转发流程简图：</p>
+<img src="/posts/187e06540a0329db/runtime_msg_send.svg" class="" title="消息转发流程简图">
+
+
+<h3 id="动态解析方法"><a href="#动态解析方法" class="headerlink" title="动态解析方法"></a>动态解析方法</h3><p>首先会调用动态方法的解析方法，我们可以尝试在<code>+(BOOL)resolveInstanceMethod:(SEL)selector</code>（针对实例方法）和<code>+(BOOL)resolveClassMethod:(SEL)sel</code>（针对类方法）中添加实现方法。</p>
+<p>实现一个动态方法解析的例子如下：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="type">void</span>)viewDidLoad &#123;</span><br><span class="line">    [<span class="variable language_">super</span> viewDidLoad];</span><br><span class="line">    <span class="comment">// Do any additional setup after loading the view, typically from a nib.</span></span><br><span class="line">    <span class="comment">//执行eat函数</span></span><br><span class="line">    [<span class="keyword">self</span> performSelector:<span class="keyword">@selector</span>(eat:)];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (<span class="type">BOOL</span>)resolveInstanceMethod:(SEL)sel &#123;</span><br><span class="line">    <span class="keyword">if</span> (sel == <span class="keyword">@selector</span>(eat:)) &#123;<span class="comment">//如果是执行eat函数，就动态解析，指定新的IMP</span></span><br><span class="line">        class_addMethod([<span class="keyword">self</span> <span class="keyword">class</span>], sel, (IMP)eatMethod, <span class="string">&quot;v@:&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> [<span class="variable language_">super</span> resolveInstanceMethod:sel];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> eatMethod(<span class="type">id</span> obj, SEL _cmd) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;Person eat&quot;</span>);<span class="comment">//新的eat函数</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>2018-08-08 15:54:30.652862+0800 Runtime[32473:3482683] Person eat</p>
+</blockquote>
+<p>从上面的例子可以看到虽然没有实现<code>eat:</code>这个函数，但是通过<code>class_addMethod</code>动态添加<code>eatMethod</code>函数，并执行<code>eatMethod</code>这个函数的<code>IMP</code>。</p>
+<p>如果<code>+ (BOOL)resolveInstanceMethod:(SEL)sel</code>或<code>+(BOOL)resolveClassMethod:(SEL)sel</code>方法没有处理<code>eat:</code>方法，运行时就会移到下一步：<code>- (id)forwardingTargetForSelector:(SEL)aSelector</code>。</p>
+<h3 id="备用接受者"><a href="#备用接受者" class="headerlink" title="备用接受者"></a>备用接受者</h3><p>如果目标对象实现了<code>- (id)forwardingTargetForSelector:(SEL)aSelector</code>，那么运行时就会调用这个方法，把这个消息转发给其他对象。</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="string">&quot;ViewController.h&quot;</span></span></span><br><span class="line"><span class="meta">#import <span class="string">&quot;objc/runtime.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Person</span>: <span class="title">NSObject</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Person</span></span></span><br><span class="line">- (<span class="type">void</span>)eat &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;forwardingTargetForSelector Person eat&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ViewController</span> ()</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="type">void</span>)viewDidLoad &#123;</span><br><span class="line">    [<span class="variable language_">super</span> viewDidLoad];</span><br><span class="line">    <span class="comment">// Do any additional setup after loading the view, typically from a nib.</span></span><br><span class="line">    <span class="comment">//执行eat函数</span></span><br><span class="line">    [<span class="keyword">self</span> performSelector:<span class="keyword">@selector</span>(eat)];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (<span class="type">BOOL</span>)resolveInstanceMethod:(SEL)sel &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NO</span>; <span class="comment">// 这里不管返回是YES还是NO都会进入forwardingTargetForSelector</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="type">id</span>)forwardingTargetForSelector:(SEL)aSelector &#123;</span><br><span class="line">    <span class="keyword">if</span> (aSelector == <span class="keyword">@selector</span>(eat)) &#123;</span><br><span class="line">        <span class="keyword">return</span> [Person new];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> [<span class="variable language_">super</span> forwardingTargetForSelector:aSelector];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> eatMethod(<span class="type">id</span> obj, SEL _cmd) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;resolveInstanceMethod Person eat&quot;</span>);<span class="comment">//新的eat函数</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<p>打印结果：</p>
+<blockquote>
+<p>2018-08-08 16:14:54.714890+0800 Runtime[35945:3529505] forwardingTargetForSelector Person eat</p>
+</blockquote>
+<p>从上面的例子我们可以看到通过<code>forwardingTargetForSelector</code>把当前<code>ViewController</code>的方法传给了<code>Person</code>去执行了。</p>
+<h3 id="完整消息转发"><a href="#完整消息转发" class="headerlink" title="完整消息转发"></a>完整消息转发</h3><p>如果上面两部步都无法处理未知消息，那么唯一能做的就是启用完整消息转发机制了。首先它会发送<code>- (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector</code>消息获得函数的参数和返回值类型。如果<code>- (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector</code>返回<code>nil</code>，<code>Runtime</code>则会发<code>-doesNotRecognizeSelector:</code>消息，程序也会挂掉。如果返回的了一个函数签名，<code>Runtime</code>就会创建一个<code>NSInvocation</code>对象并发送<code>- (void)forwardInvocation:(NSInvocation *)anInvocation</code>消息给目标对象。</p>
+<p>实现的例子如下：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="string">&quot;ViewController.h&quot;</span></span></span><br><span class="line"><span class="meta">#import <span class="string">&quot;objc/runtime.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Person</span>: <span class="title">NSObject</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Person</span></span></span><br><span class="line">- (<span class="type">void</span>)eat &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;完整消息转发 Person eat&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ViewController</span> ()</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="type">void</span>)viewDidLoad &#123;</span><br><span class="line">    [<span class="variable language_">super</span> viewDidLoad];</span><br><span class="line">    <span class="comment">// Do any additional setup after loading the view, typically from a nib.</span></span><br><span class="line">    <span class="comment">//执行eat函数</span></span><br><span class="line">    [<span class="keyword">self</span> performSelector:<span class="keyword">@selector</span>(eat)];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (<span class="type">BOOL</span>)resolveInstanceMethod:(SEL)sel &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NO</span>; <span class="comment">// 这里不管返回是YES还是NO都会进入forwardingTargetForSelector</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="type">id</span>)forwardingTargetForSelector:(SEL)aSelector &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSMethodSignature</span> *)methodSignatureForSelector:(SEL)aSelector &#123;</span><br><span class="line">    <span class="keyword">if</span> ([<span class="built_in">NSStringFromSelector</span>(aSelector) isEqualToString:<span class="string">@&quot;eat&quot;</span>]) &#123;</span><br><span class="line">        <span class="keyword">return</span> [<span class="built_in">NSMethodSignature</span> signatureWithObjCTypes:<span class="string">&quot;v@:&quot;</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> [<span class="variable language_">super</span> methodSignatureForSelector:aSelector];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="type">void</span>)forwardInvocation:(<span class="built_in">NSInvocation</span> *)anInvocation &#123;</span><br><span class="line">    SEL sel = anInvocation.selector;</span><br><span class="line">    Person *p = [Person new];</span><br><span class="line">    <span class="keyword">if</span> ([p respondsToSelector:sel]) &#123;</span><br><span class="line">        [anInvocation invokeWithTarget:p];</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        [<span class="keyword">self</span> doesNotRecognizeSelector:sel];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> eatMethod(<span class="type">id</span> obj, SEL _cmd) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;resolveInstanceMethod Person eat&quot;</span>);<span class="comment">//新的eat函数</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<p>打印结果：</p>
+<blockquote>
+<p>2018-08-08 16:38:29.076233+0800 Runtime[39848:3579675] 完整消息转发 Person eat</p>
+</blockquote>
+<p>从打印结果来看，我们实现了完整的消息转发。通过签名，<code>Runtime</code>生成了一个对象<code>(NSInvocation *)anInvocation</code>发送给<code>forwardInvocation</code>方法，我们在<code>forwardInvocation</code>方法中让<code>Person</code>对象去执行<code>eat</code>函数。</p>
+<blockquote>
+<p>关于签名参数<code>v@:</code>的解释，在苹果官方文档<a target="_blank" rel="noopener" href="https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html#//apple_ref/doc/uid/TP40008048-CH100-SW1">Type Encoding</a>中有详细的解释。</p>
+</blockquote>
+
+    </div>
+  </article>
+
+  <ul class="post-pager">
+    
+    <li class="previous">
+      <a href="/posts/0e77c12e40f681c2.html">← Previous Post</a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/posts/020c6c996c128861.html">Next Post →</a>
+    </li>
+    
+  </ul>
+
+  <div class="box-section shadow box-comment">
+    <!-- 
+  <section class="disqus-comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </section>
+
+  <script>
+    var disqus_shortname = 'jvaeyhcd';
+    
+    var disqus_url = 'https://jvaeyhcd.github.io/posts/187e06540a0329db.html';
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+  <script id="dsq-count-scr" src="//jvaeyhcd.disqus.com/count.js" async></script>
+
+
+ -->
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<div id="gitalk-container"></div>
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '29d526fe1e0f29d6b28c',
+        clientSecret: '1e5c674f3cbce0ba7d19045138d69ef800d5bd21',
+        id: window.location.pathname,
+        repo: 'jvaeyhcd.github.io',
+        owner: 'Jvaeyhcd',
+        admin: 'Jvaeyhcd'
+    })
+    gitalk.render('gitalk-container')
+</script>
+  </div>
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="layout-footer">
+    <div id="bottom-outer" class="container">
+  <div id="bottom-inner">
+    <span>
+    &copy; 2016-2022 Jvaeyhcd using
+    <a style="color:#007fff;" target="_blank" rel="noopener" href="http://hexo.io">Hexo</a>.
+    </span>
+    
+      <div class="busuanzi-box">
+        <!-- 不蒜子统计 -->
+        <span id="busuanzi_container_site_pv">
+                本站总访问量<span id="busuanzi_value_site_pv"></span>次
+        </span>
+        <span class="post-meta-divider">|</span>
+        <span id="busuanzi_container_site_uv" style='display:none'>
+                本站访客数<span id="busuanzi_value_site_uv"></span>人
+        </span>
+      </div>
+    
+    <a class="footer-icon" target="_blank" rel="noopener" href="https://github.com/Jvaeyhcd"><i class="fab fa-github"></i></a>
+  </div>
+</div>
+<link href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css" rel="stylesheet">
+<button id="totop" class="back-top">
+  <i class="icon ion-md-arrow-dropup"></i>
+</button>
+
+<script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
+<script src="/js/back-top.js"></script>
+
+  </div>
+</div>
+
+
+
+  <!-- scripts list from theme config.yml -->
+  
+    <script src="/js/dexo.js"></script>
+  
+    <script src="/js/helper.js"></script>
+  
+
+
+</body>
+</html>

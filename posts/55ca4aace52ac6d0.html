@@ -1,0 +1,211 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RESideMenu在所有界面都会侧滑的问题解决办法 [ Jvaeyhcd&#39;s Note ]</title>
+  <link rel="shortcut icon" href="/img/favicon.ico">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  
+    <!-- stylesheets list from _config.yml -->
+    
+      <link rel="stylesheet" href="/css/dexo.css">
+    
+      <link rel="stylesheet" href="/css/custom.css">
+    
+      <link rel="stylesheet" href="/css/post.css">
+    
+      <link rel="stylesheet" href="/css/page.css">
+    
+      <link rel="stylesheet" href="/css/layout.css">
+    
+      <link rel="stylesheet" href="/css/font-awesome.min.css">
+    
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+<body>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+<div class="layout-container">
+  <div class="layout-header">
+    
+
+<div class="main-nav">
+  
+  <div class="container">
+    <header class="group top-nav">
+      <nav class="navbar logo-w navbar-left">
+        <a href="/" class="logo">Jvaeyhcd's Note</a>
+      </nav>
+      <div class="navigation-toggle" onClick="hideShowMenu()">
+        <span class="logo">Jvaeyhcd's Note</span>
+      </div>
+      <nav id="navbar-menu" class="navbar item-nav navbar-right">
+        <ul>
+          
+            <li><a href="/">Home</a></li>
+          
+            <li><a href="/archives">Archives</a></li>
+          
+            <li><a href="/tag">Tags</a></li>
+          
+            <li><a target="_blank" rel="noopener" href="https://github.com/Jvaeyhcd">Github</a></li>
+          
+        </ul>
+      </nav>
+    </header>
+  </div>
+</div>
+  </div>
+  <div class="layout-content">
+    <div id="content-outer" class="container container-box">
+      <div id="content-inner" class="content-view">
+        <div class="post-content-box">
+  <article id="post" class="post-detail-box box-section shadow">
+    <div class="post-title">
+      RESideMenu在所有界面都会侧滑的问题解决办法
+    </div>
+    <div class="post-base-box">
+      <time datetime="2016-03-05T08:24:40.000Z">
+        Posted on 2016-03-05
+      </time>
+      
+        <div class="category-item">
+          In
+          <a class="category-link-grey-link" href="/categories/%E7%BB%8F%E9%AA%8C%E7%A7%AF%E7%B4%AF/">经验积累</a>
+        </div>
+      
+      <span id="busuanzi_container_page_pv">
+        &nbsp;visitors <span id="busuanzi_value_page_pv"></span>
+      </span>
+    </div>
+    <div class="post-body">
+      <blockquote>
+<p>RESideMenu一个非常好用的左右侧滑菜单控件，很多IOS项目都会用到此类左右侧滑效果。然而在RESideMenu的使用过程中，发现其默认将所有界面都加入了侧滑效果。如在主界面导航的Menu放在屏幕的左右两侧，侧滑才可以显示出来，但是当我们进入主界面的某个次级View中，甚至更深一层的View中，侧滑功能仍然可用。这一点就用IOS的UINavigationController的滑动返回冲突。为了解决这个问题，通过Google在网上搜索找到了如下的解决方法。</p>
+</blockquote>
+<span id="more"></span>
+
+<p>奉上参考原文链接地址：<a target="_blank" rel="noopener" href="http://blog.csdn.net/icetime17/article/details/46883915">http://blog.csdn.net/icetime17/article/details/46883915</a></p>
+<h2 id="RESideMenu基本用法"><a href="#RESideMenu基本用法" class="headerlink" title="RESideMenu基本用法"></a>RESideMenu基本用法</h2><p>首先创建window的rootViewController，在RootViewController引入并继承RESideMenu及其RESideMenuDelegate. </p>
+<p>具体相关代码如下：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="string">&quot;RESideMenu.h&quot;</span></span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">RootViewController</span> : <span class="title">RESideMenu</span> &lt;<span class="title">RESideMenuDelegate</span>&gt;</span></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<p>然后在RootViewController.m文件中设置好RESideMenu</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="string">&quot;RootViewController.h&quot;</span></span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">RootViewController</span> ()</span></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">RootViewController</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="type">void</span>)viewDidLoad &#123;</span><br><span class="line">  [<span class="variable language_">super</span> viewDidLoad];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="type">void</span>)didReceiveMemoryWarning &#123;</span><br><span class="line">  [<span class="variable language_">super</span> didReceiveMemoryWarning];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="type">void</span>)awakeFromNib &#123;</span><br><span class="line">  <span class="keyword">self</span>.menuPreferredStatusBarStyle = <span class="built_in">UIStatusBarStyleLightContent</span>;</span><br><span class="line">  <span class="keyword">self</span>.contentViewShadowColor = [<span class="built_in">UIColor</span> blackColor];</span><br><span class="line">  <span class="keyword">self</span>.contentViewShadowOffset = <span class="built_in">CGSizeMake</span>(<span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">  <span class="keyword">self</span>.contentViewShadowOpacity = <span class="number">0.6</span>;</span><br><span class="line">  <span class="keyword">self</span>.contentViewShadowRadius = <span class="number">12</span>;</span><br><span class="line">  <span class="keyword">self</span>.contentViewShadowEnabled = <span class="literal">NO</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">self</span>.contentViewController = [<span class="keyword">self</span>.storyboard instantiateViewControllerWithIdentifier:<span class="string">@&quot;ContentViewController&quot;</span>];</span><br><span class="line">  <span class="keyword">self</span>.leftMenuViewController = [<span class="keyword">self</span>.storyboard instantiateViewControllerWithIdentifier:<span class="string">@&quot;LeftMenuViewController&quot;</span>];</span><br><span class="line"></span><br><span class="line">  <span class="keyword">self</span>.delegate = <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">pragma</span> mark - RESideMenu Delegate</span></span><br><span class="line"></span><br><span class="line">- (<span class="type">void</span>)sideMenu:(RESideMenu *)sideMenu willShowMenuViewController:(<span class="built_in">UIViewController</span> *)menuViewController &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="type">void</span>)sideMenu:(RESideMenu *)sideMenu didShowMenuViewController:(<span class="built_in">UIViewController</span> *)menuViewController &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="type">void</span>)sideMenu:(RESideMenu *)sideMenu willHideMenuViewController:(<span class="built_in">UIViewController</span> *)menuViewController &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="type">void</span>)sideMenu:(RESideMenu *)sideMenu didHideMenuViewController:(<span class="built_in">UIViewController</span> *)menuViewController &#123;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="遇到问题"><a href="#遇到问题" class="headerlink" title="遇到问题"></a>遇到问题</h2><p>在RESideMenu的使用过程中，发现所有的界面都加上了侧滑功能，并且iOS的滑动返回功能失效了。</p>
+<h2 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h2><p>通过观察RESideMenu的源码发现，RESideMenu类中有一个BOOL属性panGestureEnabled, 可以将其视为侧滑效果的开关。以RESideMenu的panGestureEnabled属性为突破口，采用通知的方式来解决这个问题。<br>在RootViewController.m文件中加入如下代码：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="type">void</span>)viewDidLoad &#123;</span><br><span class="line">  [<span class="variable language_">super</span> viewDidLoad];</span><br><span class="line"></span><br><span class="line">  [[<span class="built_in">NSNotificationCenter</span> defaultCenter] addObserver:<span class="keyword">self</span></span><br><span class="line">                                           selector:<span class="keyword">@selector</span>(disableRESideMenu)</span><br><span class="line">                                               name:<span class="string">@&quot;disableRESideMenu&quot;</span></span><br><span class="line">                                             object:<span class="literal">nil</span>];</span><br><span class="line">  [[<span class="built_in">NSNotificationCenter</span> defaultCenter] addObserver:<span class="keyword">self</span></span><br><span class="line">                                           selector:<span class="keyword">@selector</span>(enableRESideMenu) </span><br><span class="line">                                               name:<span class="string">@&quot;enableRESideMenu&quot;</span></span><br><span class="line">                                             object:<span class="literal">nil</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="type">void</span>)enableRESideMenu &#123;</span><br><span class="line">  <span class="keyword">self</span>.panGestureEnabled = <span class="literal">YES</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="type">void</span>)disableRESideMenu &#123;</span><br><span class="line">  <span class="keyword">self</span>.panGestureEnabled = <span class="literal">NO</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在其他页面需要禁止侧滑的时候调用如下代码,发送通知</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 关闭侧滑效果</span></span><br><span class="line">[[<span class="built_in">NSNotificationCenter</span> defaultCenter] postNotificationName:<span class="string">@&quot;disableRESideMenu&quot;</span></span><br><span class="line">                                                            object:<span class="keyword">self</span></span><br><span class="line">                                                          userInfo:<span class="literal">nil</span>];</span><br></pre></td></tr></table></figure>
+<p>相反在需要侧滑的地方调用</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 开启侧滑效果</span></span><br><span class="line">[[<span class="built_in">NSNotificationCenter</span> defaultCenter] postNotificationName:<span class="string">@&quot;enableRESideMenu&quot;</span></span><br><span class="line">                                                    object:<span class="keyword">self</span></span><br><span class="line">                                                  userInfo:<span class="literal">nil</span>];</span><br></pre></td></tr></table></figure>
+    </div>
+  </article>
+
+  <ul class="post-pager">
+    
+    <li class="previous">
+      <a href="/posts/b7e0fb67d76f8e24.html">← Previous Post</a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/posts/2418260e3b67c299.html">Next Post →</a>
+    </li>
+    
+  </ul>
+
+  <div class="box-section shadow box-comment">
+    <!-- 
+  <section class="disqus-comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </section>
+
+  <script>
+    var disqus_shortname = 'jvaeyhcd';
+    
+    var disqus_url = 'https://jvaeyhcd.github.io/posts/55ca4aace52ac6d0.html';
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+  <script id="dsq-count-scr" src="//jvaeyhcd.disqus.com/count.js" async></script>
+
+
+ -->
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<div id="gitalk-container"></div>
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '29d526fe1e0f29d6b28c',
+        clientSecret: '1e5c674f3cbce0ba7d19045138d69ef800d5bd21',
+        id: window.location.pathname,
+        repo: 'jvaeyhcd.github.io',
+        owner: 'Jvaeyhcd',
+        admin: 'Jvaeyhcd'
+    })
+    gitalk.render('gitalk-container')
+</script>
+  </div>
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="layout-footer">
+    <div id="bottom-outer" class="container">
+  <div id="bottom-inner">
+    <span>
+    &copy; 2016-2022 Jvaeyhcd using
+    <a style="color:#007fff;" target="_blank" rel="noopener" href="http://hexo.io">Hexo</a>.
+    </span>
+    
+      <div class="busuanzi-box">
+        <!-- 不蒜子统计 -->
+        <span id="busuanzi_container_site_pv">
+                本站总访问量<span id="busuanzi_value_site_pv"></span>次
+        </span>
+        <span class="post-meta-divider">|</span>
+        <span id="busuanzi_container_site_uv" style='display:none'>
+                本站访客数<span id="busuanzi_value_site_uv"></span>人
+        </span>
+      </div>
+    
+    <a class="footer-icon" target="_blank" rel="noopener" href="https://github.com/Jvaeyhcd"><i class="fab fa-github"></i></a>
+  </div>
+</div>
+<link href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css" rel="stylesheet">
+<button id="totop" class="back-top">
+  <i class="icon ion-md-arrow-dropup"></i>
+</button>
+
+<script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
+<script src="/js/back-top.js"></script>
+
+  </div>
+</div>
+
+
+
+  <!-- scripts list from theme config.yml -->
+  
+    <script src="/js/dexo.js"></script>
+  
+    <script src="/js/helper.js"></script>
+  
+
+
+</body>
+</html>

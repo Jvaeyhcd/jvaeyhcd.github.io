@@ -1,0 +1,245 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CocoaPods的制作过程 [ Jvaeyhcd&#39;s Note ]</title>
+  <link rel="shortcut icon" href="/img/favicon.ico">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  
+    <!-- stylesheets list from _config.yml -->
+    
+      <link rel="stylesheet" href="/css/dexo.css">
+    
+      <link rel="stylesheet" href="/css/custom.css">
+    
+      <link rel="stylesheet" href="/css/post.css">
+    
+      <link rel="stylesheet" href="/css/page.css">
+    
+      <link rel="stylesheet" href="/css/layout.css">
+    
+      <link rel="stylesheet" href="/css/font-awesome.min.css">
+    
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+<body>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+<div class="layout-container">
+  <div class="layout-header">
+    
+
+<div class="main-nav">
+  
+  <div class="container">
+    <header class="group top-nav">
+      <nav class="navbar logo-w navbar-left">
+        <a href="/" class="logo">Jvaeyhcd's Note</a>
+      </nav>
+      <div class="navigation-toggle" onClick="hideShowMenu()">
+        <span class="logo">Jvaeyhcd's Note</span>
+      </div>
+      <nav id="navbar-menu" class="navbar item-nav navbar-right">
+        <ul>
+          
+            <li><a href="/">Home</a></li>
+          
+            <li><a href="/archives">Archives</a></li>
+          
+            <li><a href="/tag">Tags</a></li>
+          
+            <li><a target="_blank" rel="noopener" href="https://github.com/Jvaeyhcd">Github</a></li>
+          
+        </ul>
+      </nav>
+    </header>
+  </div>
+</div>
+  </div>
+  <div class="layout-content">
+    <div id="content-outer" class="container container-box">
+      <div id="content-inner" class="content-view">
+        <div class="post-content-box">
+  <article id="post" class="post-detail-box box-section shadow">
+    <div class="post-title">
+      CocoaPods的制作过程
+    </div>
+    <div class="post-base-box">
+      <time datetime="2016-07-08T09:14:00.000Z">
+        Posted on 2016-07-08
+      </time>
+      
+        <div class="category-item">
+          In
+          <a class="category-link-grey-link" href="/categories/%E7%BB%8F%E9%AA%8C%E7%A7%AF%E7%B4%AF/">经验积累</a>
+        </div>
+      
+      <span id="busuanzi_container_page_pv">
+        &nbsp;visitors <span id="busuanzi_value_page_pv"></span>
+      </span>
+    </div>
+    <div class="post-body">
+      <p>最新项目不算太忙，于是抽出了一点时间将以前项目中的使用的AVPlayer视频播放器做了一个简单的封装。现在我想把它做成CocoaPods方便以后的使用。下面我要详细的记录下我的制作过程。</p>
+<h3 id="创建仓库"><a href="#创建仓库" class="headerlink" title="创建仓库"></a>创建仓库</h3><h4 id="本地仓库"><a href="#本地仓库" class="headerlink" title="本地仓库"></a>本地仓库</h4><p>使用Xcode创建一个叫做HcdCachePlayer的工程，然后将相关的封装全部编写完毕。</p>
+<h4 id="远程仓库"><a href="#远程仓库" class="headerlink" title="远程仓库"></a>远程仓库</h4><p>在github上同样创建一个<code>HcdCachePlayer</code>,最好保持同名,需要注意的是,在创建仓库的时候需要添加<code>license</code>类型,这里我使用<code>license</code>类型为<code>MIT</code>。这个很简单就不再啰嗦了。</p>
+<span id="more"></span>
+<h4 id="关联本地仓库到远程仓库"><a href="#关联本地仓库到远程仓库" class="headerlink" title="关联本地仓库到远程仓库"></a>关联本地仓库到远程仓库</h4><p>进入本地仓库目录</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/github/HcdCachePlayer/</span><br></pre></td></tr></table></figure>
+<p>关联远程仓库</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git init</span><br><span class="line">git remote add origin https://github.com/Jvaeyhcd/HcdCachePlayer.git</span><br><span class="line">git push -u origin master</span><br></pre></td></tr></table></figure>
+
+<h3 id="添加Pods依赖库所需文件"><a href="#添加Pods依赖库所需文件" class="headerlink" title="添加Pods依赖库所需文件"></a>添加Pods依赖库所需文件</h3><p>依赖库所需的文件格式为<code>&#123;project&#125;.podspec</code>格式，每个Pods依赖库必须有这个描述文件。</p>
+<h4 id="添加-project-podspec文件"><a href="#添加-project-podspec文件" class="headerlink" title="添加{project}.podspec文件"></a>添加{project}.podspec文件</h4><p>使用pod命令创建</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pod spec create HcdCachePlayer</span><br></pre></td></tr></table></figure>
+<p>这样就生成了HcdCachePlayer.podspec文件，打开该文件添加内容，并删除不需要的后就像这样：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Pod::Spec.new <span class="keyword">do</span> |s|</span><br><span class="line">  s.name         = <span class="string">&quot;HcdCachePlayer&quot;</span></span><br><span class="line">  s.version      = <span class="string">&quot;0.0.1&quot;</span></span><br><span class="line">  s.summary      = <span class="string">&quot;一个带缓存的视频播放器HcdCachePlayer&quot;</span></span><br><span class="line">  s.description  = &lt;&lt;-<span class="string">DESC</span></span><br><span class="line"><span class="string">  一个使用AVPlayer封装的带缓存的视频播放器,支持全屏，可以左右滑动手势快进快退，上下滑动手势调节屏幕亮度</span></span><br><span class="line"><span class="string">                   DESC</span></span><br><span class="line">  s.homepage     = <span class="string">&quot;https://github.com/Jvaeyhcd/HcdCachePlayer&quot;</span></span><br><span class="line">  s.license      = &#123; :<span class="built_in">type</span> =&gt; <span class="string">&quot;MIT&quot;</span>, :file =&gt; <span class="string">&quot;LICENSE&quot;</span> &#125;</span><br><span class="line">  s.author             = &#123; <span class="string">&quot;Jvaeyhcd&quot;</span> =&gt; <span class="string">&quot;chedahuang@icloud.com&quot;</span> &#125;</span><br><span class="line">  s.platform     = :ios, <span class="string">&#x27;7.0&#x27;</span></span><br><span class="line">  s.source       = &#123; :git =&gt; <span class="string">&quot;https://github.com/Jvaeyhcd/HcdCachePlayer.git&quot;</span>, :tag =&gt; s.version.to_s &#125;</span><br><span class="line">  s.source_files  = <span class="string">&quot;hcdCachePlayer/**/*.&#123;h,m&#125;&quot;</span></span><br><span class="line">  s.resource  = <span class="string">&quot;hcdCachePlayer/hcdCachePlayer.bundle&quot;</span></span><br><span class="line">  s.frameworks = <span class="string">&quot;UIKit&quot;</span>, <span class="string">&quot;AVFoundation&quot;</span>, <span class="string">&quot;MobileCoreServices&quot;</span>, <span class="string">&quot;Foundation&quot;</span></span><br><span class="line">  s.requires_arc = <span class="literal">true</span></span><br><span class="line">  s.dependency <span class="string">&quot;Masonry&quot;</span></span><br><span class="line">end</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>s.source_files指向循环滚动的核心代码放在项目的s.hcdCachePlayer/**/*.{h,m},所以这里最好将库代码都放在同一个目录下。</p>
+<h3 id="提交到github"><a href="#提交到github" class="headerlink" title="提交到github"></a>提交到github</h3><p>此时编码已经完成了，并且配置好了相关文件我们可以先将代码提交到github上了。</p>
+<h4 id="Pods验证"><a href="#Pods验证" class="headerlink" title="Pods验证"></a>Pods验证</h4><p>提交之前我们需要先验证一下HcdCachePlayer.podspec文件。在HcdCachePlayer.podspec所在目录运行如下命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pod lib lint</span><br></pre></td></tr></table></figure>
+<p>如果出现ERROR和WARING都会失败，如果失败会明确指明哪个地方出错了，按提示修改就可以了。</p>
+<h4 id="提交代码到Github"><a href="#提交代码到Github" class="headerlink" title="提交代码到Github"></a>提交代码到Github</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br><span class="line">git commit -m <span class="string">&quot;version 0.0.1&quot;</span></span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
+
+<p>打上标签</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git tag 0.0.1</span><br><span class="line">git push --tags</span><br></pre></td></tr></table></figure>
+<p>不出问题的话,就可以在github上看到最新提交的内容了。</p>
+<h3 id="上传-project-podspec到CocoaPods官方仓库中"><a href="#上传-project-podspec到CocoaPods官方仓库中" class="headerlink" title="上传{project}.podspec到CocoaPods官方仓库中"></a>上传{project}.podspec到CocoaPods官方仓库中</h3><p>要想一个HcdCachePlayer真正可以用,就得把生成的HcdCachePlayer.podspec文件提交到Cocoapods官方的<a target="_blank" rel="noopener" href="https://github.com/CocoaPods/Specs">Specs</a>仓库中,才能被search到并使用。</p>
+<blockquote>
+<p>之前的提交方式是先将<a target="_blank" rel="noopener" href="https://github.com/CocoaPods/Specs">Specs</a>仓库fork一份，添加修改，然后push，等待审核，这种显示是不安全的，所以现在不能使用了。也就是这篇文章：<a target="_blank" rel="noopener" href="http://blog.csdn.net/wzzvictory/article/details/20067595">《CocoaPods详解之—-制作篇》</a>中说提到的方法，注意这个方法已经不能使用了。</p>
+</blockquote>
+<p>CocoaPods为我们提供了另外一个更加安全的方法<a target="_blank" rel="noopener" href="http://blog.cocoapods.org/CocoaPods-Trunk/#transition">Trunk</a>。</p>
+<h4 id="Trunk的Register"><a href="#Trunk的Register" class="headerlink" title="Trunk的Register"></a>Trunk的Register</h4><p>如果第一次使用的话那么就需要注册了，需要CocoaPods0.33版本以上才支持</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pod trunk register *youremail* *yourname* --description=<span class="string">&#x27;iMac&#x27;</span> --verbose</span><br></pre></td></tr></table></figure>
+<p>以上命令是注册所需的,替换你的邮箱,用户名,以及描述内容, –verbose可以输入详细的debug。</p>
+<p>注册完成后可以使用一下命令查看注册信息</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pod trunk me</span><br></pre></td></tr></table></figure>
+<h4 id="提交-project-podspec"><a href="#提交-project-podspec" class="headerlink" title="提交{project}.podspec"></a>提交{project}.podspec</h4><p>在{project}.podspec文件的路径下执行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pod trunk push HcdCachePlayer.podspec</span><br></pre></td></tr></table></figure>
+<p>这条命令做了如下三件事:</p>
+<ul>
+<li>验证本地的podspec文件,也可以使用 pod lib lint验证</li>
+<li>上传podspec文件到trunk服务</li>
+<li>将{project}.podspec文件转为{poject}.podspec.json文件</li>
+</ul>
+<p>如果没有报错那么就成功了。</p>
+<h4 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h4><p>终端执行 pod search HcdCachePlayer就可以找到了,如果没有找到 pod setup再试一下。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">-&gt; HcdCachePlayer (0.0.1)</span><br><span class="line">   一个带缓存的视频播放器HcdCachePlayer</span><br><span class="line">   pod <span class="string">&#x27;HcdCachePlayer&#x27;</span>, <span class="string">&#x27;~&gt; 0.0.1&#x27;</span></span><br><span class="line">   - Homepage: https://github.com/Jvaeyhcd/HcdCachePlayer</span><br><span class="line">   - Source:   https://github.com/Jvaeyhcd/HcdCachePlayer.git</span><br><span class="line">   - Versions: 0.0.1 [master repo]</span><br><span class="line">(END)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>这里遇到一个问题创建成功了，但是另外一台电脑却收不到。</p>
+</blockquote>
+<h4 id="协同工作"><a href="#协同工作" class="headerlink" title="协同工作"></a>协同工作</h4><p>当需要其他人来共同维护你的代码,需要提供权限。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pod trunk add-owner HcdCachePlayer *email*</span><br></pre></td></tr></table></figure>
+
+<p>参考文章：</p>
+<p><a target="_blank" rel="noopener" href="http://foggry.com/blog/2016/03/23/cocoapods-xiang-jie-zhi-geng-xin-pian/">CocoaPods 详解之—-更新篇</a></p>
+
+    </div>
+  </article>
+
+  <ul class="post-pager">
+    
+    <li class="previous">
+      <a href="/posts/e4250f7a7414ce80.html">← Previous Post</a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/posts/8ab809de7f3aefd3.html">Next Post →</a>
+    </li>
+    
+  </ul>
+
+  <div class="box-section shadow box-comment">
+    <!-- 
+  <section class="disqus-comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </section>
+
+  <script>
+    var disqus_shortname = 'jvaeyhcd';
+    
+    var disqus_url = 'https://jvaeyhcd.github.io/posts/f0d17f38ce3c6038.html';
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+  <script id="dsq-count-scr" src="//jvaeyhcd.disqus.com/count.js" async></script>
+
+
+ -->
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<div id="gitalk-container"></div>
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '29d526fe1e0f29d6b28c',
+        clientSecret: '1e5c674f3cbce0ba7d19045138d69ef800d5bd21',
+        id: window.location.pathname,
+        repo: 'jvaeyhcd.github.io',
+        owner: 'Jvaeyhcd',
+        admin: 'Jvaeyhcd'
+    })
+    gitalk.render('gitalk-container')
+</script>
+  </div>
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="layout-footer">
+    <div id="bottom-outer" class="container">
+  <div id="bottom-inner">
+    <span>
+    &copy; 2016-2022 Jvaeyhcd using
+    <a style="color:#007fff;" target="_blank" rel="noopener" href="http://hexo.io">Hexo</a>.
+    </span>
+    
+      <div class="busuanzi-box">
+        <!-- 不蒜子统计 -->
+        <span id="busuanzi_container_site_pv">
+                本站总访问量<span id="busuanzi_value_site_pv"></span>次
+        </span>
+        <span class="post-meta-divider">|</span>
+        <span id="busuanzi_container_site_uv" style='display:none'>
+                本站访客数<span id="busuanzi_value_site_uv"></span>人
+        </span>
+      </div>
+    
+    <a class="footer-icon" target="_blank" rel="noopener" href="https://github.com/Jvaeyhcd"><i class="fab fa-github"></i></a>
+  </div>
+</div>
+<link href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css" rel="stylesheet">
+<button id="totop" class="back-top">
+  <i class="icon ion-md-arrow-dropup"></i>
+</button>
+
+<script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
+<script src="/js/back-top.js"></script>
+
+  </div>
+</div>
+
+
+
+  <!-- scripts list from theme config.yml -->
+  
+    <script src="/js/dexo.js"></script>
+  
+    <script src="/js/helper.js"></script>
+  
+
+
+</body>
+</html>
