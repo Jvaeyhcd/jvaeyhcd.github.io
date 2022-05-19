@@ -1,0 +1,223 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>动态规划初探-递推 [ Hexo ]</title>
+  <link rel="shortcut icon" href="/img/favicon.ico">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  
+    <!-- stylesheets list from _config.yml -->
+    
+      <link rel="stylesheet" href="/css/dexo.css">
+    
+      <link rel="stylesheet" href="/css/custom.css">
+    
+      <link rel="stylesheet" href="/css/post.css">
+    
+      <link rel="stylesheet" href="/css/page.css">
+    
+      <link rel="stylesheet" href="/css/layout.css">
+    
+      <link rel="stylesheet" href="/css/font-awesome.min.css">
+    
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+<body>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+<div class="layout-container">
+  <div class="layout-header">
+    
+
+<div class="main-nav">
+  
+  <div class="container">
+    <header class="group top-nav">
+      <nav class="navbar logo-w navbar-left">
+        <a href="/" class="logo">Hexo</a>
+      </nav>
+      <div class="navigation-toggle" onClick="hideShowMenu()">
+        <span class="logo">Hexo</span>
+      </div>
+      <nav id="navbar-menu" class="navbar item-nav navbar-right">
+        <ul>
+          
+            <li><a href="/">Home</a></li>
+          
+            <li><a href="/archives">Archives</a></li>
+          
+            <li><a href="/tag">Tags</a></li>
+          
+            <li><a target="_blank" rel="noopener" href="https://github.com/Jvaeyhcd">Github</a></li>
+          
+        </ul>
+      </nav>
+    </header>
+  </div>
+</div>
+  </div>
+  <div class="layout-content">
+    <div id="content-outer" class="container container-box">
+      <div id="content-inner" class="content-view">
+        <div class="post-content-box">
+  <article id="post" class="post-detail-box box-section shadow">
+    <div class="post-title">
+      动态规划初探-递推
+    </div>
+    <div class="post-base-box">
+      <time datetime="2019-01-07T07:25:53.000Z">
+        Posted on 2019-01-07
+      </time>
+      
+        <div class="category-item">
+          In
+          <a class="category-link-grey-link" href="/categories/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/">动态规划</a>
+        </div>
+      
+      <span id="busuanzi_container_page_pv">
+        &nbsp;visitors <span id="busuanzi_value_page_pv"></span>
+      </span>
+    </div>
+    <div class="post-body">
+      <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>动态规划（英语：Dynamic programming，简称DP）是一种在数学、管理科学、计算机科学、经济学和生物信息学中使用的，通过把原问题分解为相对简单的子问题的方式求解复杂问题的方法。动态规划常常适用于有重叠子问题[1]和最优子结构（英语：Optimal substructure）性质的问题，动态规划方法所耗时间往往远少于朴素解法。动态规划背后的基本思想非常简单。大致上，若要解一个给定问题，我们需要解其不同部分（即子问题），再根据子问题的解以得出原问题的解。通常许多子问题非常相似，为此动态规划法试图仅仅解决每个子问题一次，从而减少计算量：一旦某个给定子问题的解已经算出，则将其记忆化存储，以便下次需要同一个子问题解之时直接查表。这种做法在重复子问题的数目关于输入的规模呈指數增長时特别有用。</p>
+<span id="more"></span>
+<p>动态规划在查找有很多重叠子问题的最优解时有效。它将问题重新组合成子问题。为了避免多次解决这些子问题，他们的结构都逐渐计算并保存，从简单的问题直到整个问题被解决。因此，动态规划保存递归时候的结果，因而不会再解决同样的问题时花费时间。动态规划只能用于有最优子结构的问题。最优子结构的意思是局部最优解能决定全局最优解（对有些问题这个要求并不能完全满足，故有时需要引入一定的近似）。简单地说，问题能够分解成子问题来解决。</p>
+<blockquote>
+<p>以上描述来自<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92">维基百科</a>。</p>
+</blockquote>
+<h2 id="骨牌铺方格"><a href="#骨牌铺方格" class="headerlink" title="骨牌铺方格"></a>骨牌铺方格</h2><h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p>在2*n的长方形方格中，用一个1x2的骨牌铺满方格，输入n，输出铺满方格的方案总数。</p>
+<h3 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h3><p>我们用f[i]表示2xi的方格铺满骨牌的方案数，那么考虑到第i列，要么竖着放置一个骨牌；要么连同i-1列，横着放置两个骨牌，如下图所示。由于骨牌的长度为1x2，所以在第i列放置的骨牌无法影响到第i-2列。很显然，图中两块黑色的部分分别表示<code>f[i-1]</code>和<code>f[i-2]</code>，所以可以得到递推公式<code>f[i]=f[i-1]+f[i-2]</code>，并且边界条件为<code>f[0]=f[1]=1</code>。</p>
+
+
+<h3 id="问题升级I"><a href="#问题升级I" class="headerlink" title="问题升级I"></a>问题升级I</h3><p>有两种形状的瓷砖：一种是2x1的多米诺形，另一种是形如”L”的托米洛形。两种形状都可以旋转。给定N的值，有多少种方法可以平铺2xN的面板？</p>
+<p>题目链接：<a target="_blank" rel="noopener" href="https://leetcode.com/problems/domino-and-tromino-tiling/">https://leetcode.com/problems/domino-and-tromino-tiling/</a></p>
+
+
+<p>如上图可得到递归公式为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">dp[n]=dp[n-1]+dp[n-2]+ 2*(dp[n-3]+...+d[0])</span><br><span class="line">=dp[n-1]+dp[n-2]+dp[n-3]+dp[n-3]+2*(dp[n-4]+...+d[0])</span><br><span class="line">=dp[n-1]+dp[n-3]+(dp[n-2]+dp[n-3]+2*(dp[n-4]+...+d[0]))</span><br><span class="line">=dp[n-1]+dp[n-3]+dp[n-1]</span><br><span class="line">=2*dp[n-1]+dp[n-3]</span><br></pre></td></tr></table></figure>
+
+<h3 id="问题升级II"><a href="#问题升级II" class="headerlink" title="问题升级II"></a>问题升级II</h3><p>在3*n的长方形方格中，用一个1x2的骨牌铺满方格，输入n，输出铺满方格的方案总数。</p>
+<p>首先我们可以确定当n等于奇数的时候，方案数一定为0。所以如果用f<a href="i%E4%B8%BA%E5%81%B6%E6%95%B0">i</a>表示3xi的方格铺满骨牌的方案，<code>f[i]</code>的方案数不可能由<code>f[i-1]</code>递推而来。那么可以猜想<code>f[i]</code>和<code>f[i-2]</code>一定是有关系的，如下图所示，我们把第i列和第i-1列用1x2的骨牌填满后，轻易转化成了<code>f[i-2]</code>的问题，那是不是代表<code>f[i]=3*f[i-2]</code>呢？</p>
+
+
+<p>仔细想才发现不对，我们少考虑了如下的情况，这些情况无法用上图的情况表示，发现和<code>f[i-4]</code>也有关系，但是还是漏掉了一些情况。</p>
+
+
+<p>上面的问题说明我们在设计状态的时候的思维定式，当一维的状态已经无法满足我们的需求时，我们可以试着增加一维，用二维来表示状态，用<code>f[i][j]</code>表示3xi+j个多余块的摆放方案数，如下图所示：</p>
+
+
+<p>转化成二维后，我们可以写出如下三种情况的递推式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">f[i][0]=f[i-2][0]+f[i-1][1]+f[i-2][2]</span><br><span class="line">f[i][1]=f[i-1][2]</span><br><span class="line">f[i][2]=f[i][0]+f[i-1][1]</span><br></pre></td></tr></table></figure>
+<p>边界条件<code>f[0][0]=f[1][1]=f[0][2]=1</code>。</p>
+
+
+    </div>
+  </article>
+
+  <ul class="post-pager">
+    
+    <li class="previous">
+      <a href="/2019/02/06/Vue-IE%E6%8A%A5%E9%94%99SCRIPT1006%EF%BC%9A%E7%BC%BA%E5%B0%91%E2%80%98-%E2%80%99%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95/">← Previous Post</a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2018/12/29/%E5%9C%A8-React-Native-%E4%B8%AD%E4%BD%BF%E7%94%A8-ART-%E7%BB%98%E5%88%B6%E6%B3%A2%E6%B5%AA%E5%8A%A8%E7%94%BB/">Next Post →</a>
+    </li>
+    
+  </ul>
+
+  <div class="box-section shadow box-comment">
+    <!-- 
+  <section class="disqus-comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </section>
+
+  <script>
+    var disqus_shortname = 'jvaeyhcd';
+    
+    var disqus_url = 'http://example.com/2019/01/07/pd-recurrence/';
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+  <script id="dsq-count-scr" src="//jvaeyhcd.disqus.com/count.js" async></script>
+
+
+ -->
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<div id="gitalk-container"></div>
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '29d526fe1e0f29d6b28c',
+        clientSecret: '1e5c674f3cbce0ba7d19045138d69ef800d5bd21',
+        id: window.location.pathname,
+        repo: 'jvaeyhcd.github.io',
+        owner: 'Jvaeyhcd',
+        admin: 'Jvaeyhcd'
+    })
+    gitalk.render('gitalk-container')
+</script>
+  </div>
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="layout-footer">
+    <div id="bottom-outer" class="container">
+  <div id="bottom-inner">
+    <span>
+    &copy; 2016-2022 John Doe using
+    <a style="color:#007fff;" target="_blank" rel="noopener" href="http://hexo.io">Hexo</a>.
+    </span>
+    
+      <div class="busuanzi-box">
+        <!-- 不蒜子统计 -->
+        <span id="busuanzi_container_site_pv">
+                本站总访问量<span id="busuanzi_value_site_pv"></span>次
+        </span>
+        <span class="post-meta-divider">|</span>
+        <span id="busuanzi_container_site_uv" style='display:none'>
+                本站访客数<span id="busuanzi_value_site_uv"></span>人
+        </span>
+      </div>
+    
+    <a class="footer-icon" target="_blank" rel="noopener" href="https://github.com/Jvaeyhcd"><i class="fab fa-github"></i></a>
+  </div>
+</div>
+<link href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css" rel="stylesheet">
+<button id="totop" class="back-top">
+  <i class="icon ion-md-arrow-dropup"></i>
+</button>
+
+<script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
+<script src="/js/back-top.js"></script>
+
+  </div>
+</div>
+
+
+
+  <!-- scripts list from theme config.yml -->
+  
+    <script src="/js/dexo.js"></script>
+  
+    <script src="/js/helper.js"></script>
+  
+
+
+</body>
+</html>

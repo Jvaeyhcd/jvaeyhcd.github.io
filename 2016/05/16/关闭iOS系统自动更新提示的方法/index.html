@@ -1,0 +1,207 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>关闭iOS系统自动更新提示的方法 [ Hexo ]</title>
+  <link rel="shortcut icon" href="/img/favicon.ico">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  
+    <!-- stylesheets list from _config.yml -->
+    
+      <link rel="stylesheet" href="/css/dexo.css">
+    
+      <link rel="stylesheet" href="/css/custom.css">
+    
+      <link rel="stylesheet" href="/css/post.css">
+    
+      <link rel="stylesheet" href="/css/page.css">
+    
+      <link rel="stylesheet" href="/css/layout.css">
+    
+      <link rel="stylesheet" href="/css/font-awesome.min.css">
+    
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+<body>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+<div class="layout-container">
+  <div class="layout-header">
+    
+
+<div class="main-nav">
+  
+  <div class="container">
+    <header class="group top-nav">
+      <nav class="navbar logo-w navbar-left">
+        <a href="/" class="logo">Hexo</a>
+      </nav>
+      <div class="navigation-toggle" onClick="hideShowMenu()">
+        <span class="logo">Hexo</span>
+      </div>
+      <nav id="navbar-menu" class="navbar item-nav navbar-right">
+        <ul>
+          
+            <li><a href="/">Home</a></li>
+          
+            <li><a href="/archives">Archives</a></li>
+          
+            <li><a href="/tag">Tags</a></li>
+          
+            <li><a target="_blank" rel="noopener" href="https://github.com/Jvaeyhcd">Github</a></li>
+          
+        </ul>
+      </nav>
+    </header>
+  </div>
+</div>
+  </div>
+  <div class="layout-content">
+    <div id="content-outer" class="container container-box">
+      <div id="content-inner" class="content-view">
+        <div class="post-content-box">
+  <article id="post" class="post-detail-box box-section shadow">
+    <div class="post-title">
+      关闭iOS系统自动更新提示的方法
+    </div>
+    <div class="post-base-box">
+      <time datetime="2016-05-16T02:16:25.000Z">
+        Posted on 2016-05-16
+      </time>
+      
+        <div class="category-item">
+          In
+          <a class="category-link-grey-link" href="/categories/%E5%85%B6%E4%BB%96/">其他</a>
+        </div>
+      
+      <span id="busuanzi_container_page_pv">
+        &nbsp;visitors <span id="busuanzi_value_page_pv"></span>
+      </span>
+    </div>
+    <div class="post-body">
+      <p>一直以来都被iOS的自动更新困扰，每次苹果推出了最新版本的iOS系统都会提示自动更新，真的很烦。并且公司的测试机不可能全都是一个版本的系统，不然很多不同iOS版本系统的bug根本无法测出来，所以为了保持测试机系统的多样性，我想保持一部分手机系统永不更新，让我自己的手机保持最新系统就行了。</p>
+<span id="more"></span>
+
+<h2 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h2><p>经过一段时间的试验，有如下几个对应方案：</p>
+<ol>
+<li>设置 - 通用 - 用量 - 管理存储空间 - 找到更新包，然后删除它</li>
+<li>设置 - iTunes&amp;App Stores, 找到Updates，关闭</li>
+</ol>
+<p>如果以上两个方案还不管用，直接放大招：<br>在手机上打开safari，地址栏输入:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://oldcat.me/web/NOOTA9.mobileconfig</span><br></pre></td></tr></table></figure>
+<p>然后回车<br>按照要求安装此provision文件即可，然后重启。</p>
+
+
+<p>重启后打开设置 - 通用 - 软件更新 有惊喜</p>
+
+
+    </div>
+  </article>
+
+  <ul class="post-pager">
+    
+    <li class="previous">
+      <a href="/2016/05/21/%E4%BD%BF%E7%94%A8Jenkins%E6%9E%84%E5%BB%BAiOS%E6%8C%81%E7%BB%AD%E9%9B%86%E6%88%90%E8%87%AA%E5%8A%A8%E6%89%93%E5%8C%85/">← Previous Post</a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2016/05/04/Objective-C%E8%BF%87%E6%BB%A4NSString%E4%B8%AD%E7%9A%84HTML%E6%A0%87%E7%AD%BE/">Next Post →</a>
+    </li>
+    
+  </ul>
+
+  <div class="box-section shadow box-comment">
+    <!-- 
+  <section class="disqus-comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </section>
+
+  <script>
+    var disqus_shortname = 'jvaeyhcd';
+    
+    var disqus_url = 'http://example.com/2016/05/16/%E5%85%B3%E9%97%ADiOS%E7%B3%BB%E7%BB%9F%E8%87%AA%E5%8A%A8%E6%9B%B4%E6%96%B0%E6%8F%90%E7%A4%BA%E7%9A%84%E6%96%B9%E6%B3%95/';
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+  <script id="dsq-count-scr" src="//jvaeyhcd.disqus.com/count.js" async></script>
+
+
+ -->
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<div id="gitalk-container"></div>
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '29d526fe1e0f29d6b28c',
+        clientSecret: '1e5c674f3cbce0ba7d19045138d69ef800d5bd21',
+        id: window.location.pathname,
+        repo: 'jvaeyhcd.github.io',
+        owner: 'Jvaeyhcd',
+        admin: 'Jvaeyhcd'
+    })
+    gitalk.render('gitalk-container')
+</script>
+  </div>
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="layout-footer">
+    <div id="bottom-outer" class="container">
+  <div id="bottom-inner">
+    <span>
+    &copy; 2016-2022 John Doe using
+    <a style="color:#007fff;" target="_blank" rel="noopener" href="http://hexo.io">Hexo</a>.
+    </span>
+    
+      <div class="busuanzi-box">
+        <!-- 不蒜子统计 -->
+        <span id="busuanzi_container_site_pv">
+                本站总访问量<span id="busuanzi_value_site_pv"></span>次
+        </span>
+        <span class="post-meta-divider">|</span>
+        <span id="busuanzi_container_site_uv" style='display:none'>
+                本站访客数<span id="busuanzi_value_site_uv"></span>人
+        </span>
+      </div>
+    
+    <a class="footer-icon" target="_blank" rel="noopener" href="https://github.com/Jvaeyhcd"><i class="fab fa-github"></i></a>
+  </div>
+</div>
+<link href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css" rel="stylesheet">
+<button id="totop" class="back-top">
+  <i class="icon ion-md-arrow-dropup"></i>
+</button>
+
+<script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
+<script src="/js/back-top.js"></script>
+
+  </div>
+</div>
+
+
+
+  <!-- scripts list from theme config.yml -->
+  
+    <script src="/js/dexo.js"></script>
+  
+    <script src="/js/helper.js"></script>
+  
+
+
+</body>
+</html>

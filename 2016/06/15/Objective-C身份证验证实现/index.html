@@ -1,0 +1,199 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Objective-C身份证验证实现 [ Hexo ]</title>
+  <link rel="shortcut icon" href="/img/favicon.ico">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  
+    <!-- stylesheets list from _config.yml -->
+    
+      <link rel="stylesheet" href="/css/dexo.css">
+    
+      <link rel="stylesheet" href="/css/custom.css">
+    
+      <link rel="stylesheet" href="/css/post.css">
+    
+      <link rel="stylesheet" href="/css/page.css">
+    
+      <link rel="stylesheet" href="/css/layout.css">
+    
+      <link rel="stylesheet" href="/css/font-awesome.min.css">
+    
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+<body>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+<div class="layout-container">
+  <div class="layout-header">
+    
+
+<div class="main-nav">
+  
+  <div class="container">
+    <header class="group top-nav">
+      <nav class="navbar logo-w navbar-left">
+        <a href="/" class="logo">Hexo</a>
+      </nav>
+      <div class="navigation-toggle" onClick="hideShowMenu()">
+        <span class="logo">Hexo</span>
+      </div>
+      <nav id="navbar-menu" class="navbar item-nav navbar-right">
+        <ul>
+          
+            <li><a href="/">Home</a></li>
+          
+            <li><a href="/archives">Archives</a></li>
+          
+            <li><a href="/tag">Tags</a></li>
+          
+            <li><a target="_blank" rel="noopener" href="https://github.com/Jvaeyhcd">Github</a></li>
+          
+        </ul>
+      </nav>
+    </header>
+  </div>
+</div>
+  </div>
+  <div class="layout-content">
+    <div id="content-outer" class="container container-box">
+      <div id="content-inner" class="content-view">
+        <div class="post-content-box">
+  <article id="post" class="post-detail-box box-section shadow">
+    <div class="post-title">
+      Objective-C身份证验证实现
+    </div>
+    <div class="post-base-box">
+      <time datetime="2016-06-15T04:04:58.000Z">
+        Posted on 2016-06-15
+      </time>
+      
+        <div class="category-item">
+          In
+          <a class="category-link-grey-link" href="/categories/%E7%BB%8F%E9%AA%8C%E7%A7%AF%E7%B4%AF/">经验积累</a>
+        </div>
+      
+      <span id="busuanzi_container_page_pv">
+        &nbsp;visitors <span id="busuanzi_value_page_pv"></span>
+      </span>
+    </div>
+    <div class="post-body">
+      <p>最近在一个二次开发的项目中看到了一段身份证验证的OC代码，虽然我一直讨厌二次开发。因为这这个二次开发的项目太老，代码太乱，毫无层次感。可是令人欣慰的是，我在里面发现了一段有用的代码。</p>
+<p>直接上代码</p>
+<span id="more"></span>
+
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="type">BOOL</span>)isValidIdCardNum</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">NSString</span> *value = [<span class="keyword">self</span> <span class="keyword">copy</span>];</span><br><span class="line">    value = [value stringByReplacingOccurrencesOfString:<span class="string">@&quot;X&quot;</span> withString:<span class="string">@&quot;x&quot;</span>];</span><br><span class="line">    value = [value stringByTrimmingCharactersInSet:[<span class="built_in">NSCharacterSet</span> whitespaceAndNewlineCharacterSet]];</span><br><span class="line">    <span class="type">int</span> length = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (!value) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">    &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">        length = (<span class="type">int</span>)value.length;</span><br><span class="line">        <span class="keyword">if</span> (length != <span class="number">15</span> &amp;&amp; length !=<span class="number">18</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 省份代码</span></span><br><span class="line">    <span class="built_in">NSArray</span> *areasArray =@[<span class="string">@&quot;11&quot;</span>, <span class="string">@&quot;12&quot;</span>, <span class="string">@&quot;13&quot;</span>, <span class="string">@&quot;14&quot;</span>, <span class="string">@&quot;15&quot;</span>, <span class="string">@&quot;21&quot;</span>, <span class="string">@&quot;22&quot;</span>, <span class="string">@&quot;23&quot;</span>, <span class="string">@&quot;31&quot;</span>, <span class="string">@&quot;32&quot;</span>, <span class="string">@&quot;33&quot;</span>, <span class="string">@&quot;34&quot;</span>, <span class="string">@&quot;35&quot;</span>, <span class="string">@&quot;36&quot;</span>, <span class="string">@&quot;37&quot;</span>, <span class="string">@&quot;41&quot;</span>, <span class="string">@&quot;42&quot;</span>, <span class="string">@&quot;43&quot;</span>, <span class="string">@&quot;44&quot;</span>, <span class="string">@&quot;45&quot;</span>, <span class="string">@&quot;46&quot;</span>, <span class="string">@&quot;50&quot;</span>, <span class="string">@&quot;51&quot;</span>, <span class="string">@&quot;52&quot;</span>, <span class="string">@&quot;53&quot;</span>, <span class="string">@&quot;54&quot;</span>, <span class="string">@&quot;61&quot;</span>, <span class="string">@&quot;62&quot;</span>, <span class="string">@&quot;63&quot;</span>, <span class="string">@&quot;64&quot;</span>, <span class="string">@&quot;65&quot;</span>, <span class="string">@&quot;71&quot;</span>, <span class="string">@&quot;81&quot;</span>, <span class="string">@&quot;82&quot;</span>, <span class="string">@&quot;91&quot;</span>];</span><br><span class="line">    <span class="built_in">NSString</span> *valueStart2 = [value substringToIndex:<span class="number">2</span>];</span><br><span class="line">    <span class="type">BOOL</span> areaFlag = <span class="literal">NO</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="built_in">NSString</span> *areaCode <span class="keyword">in</span> areasArray) &#123;</span><br><span class="line">        <span class="keyword">if</span> ([areaCode isEqualToString:valueStart2]) &#123;</span><br><span class="line">            areaFlag = <span class="literal">YES</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!areaFlag) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">NSRegularExpression</span> *regularExpression;</span><br><span class="line">    <span class="built_in">NSUInteger</span> numberofMatch;</span><br><span class="line">    <span class="type">int</span> year = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">switch</span> (length) &#123;</span><br><span class="line">        <span class="keyword">case</span> <span class="number">15</span>:</span><br><span class="line">            year = [value substringWithRange:<span class="built_in">NSMakeRange</span>(<span class="number">6</span>,<span class="number">2</span>)].intValue +<span class="number">1900</span>;</span><br><span class="line">            <span class="keyword">if</span> (year % <span class="number">4</span> ==<span class="number">0</span> || (year % <span class="number">100</span> ==<span class="number">0</span> &amp;&amp; year % <span class="number">4</span> ==<span class="number">0</span>)) &#123;</span><br><span class="line">                regularExpression = [[<span class="built_in">NSRegularExpression</span> alloc] initWithPattern:<span class="string">@&quot;^[1-9][0-9]&#123;5&#125;[0-9]&#123;2&#125;((01|03|05|07|08|10|12)(0[1-9]|[1-2][0-9]|3[0-1])|(04|06|09|11)(0[1-9]|[1-2][0-9]|30)|02(0[1-9]|[1-2][0-9]))[0-9]&#123;3&#125;$&quot;</span>                   options:<span class="built_in">NSRegularExpressionCaseInsensitive</span> error:<span class="literal">nil</span>];<span class="comment">// 测试出生日期的合法性</span></span><br><span class="line">            &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                regularExpression = [[<span class="built_in">NSRegularExpression</span> alloc] initWithPattern:<span class="string">@&quot;^[1-9][0-9]&#123;5&#125;[0-9]&#123;2&#125;((01|03|05|07|08|10|12)(0[1-9]|[1-2][0-9]|3[0-1])|(04|06|09|11)(0[1-9]|[1-2][0-9]|30)|02(0[1-9]|1[0-9]|2[0-8]))[0-9]&#123;3&#125;$&quot;</span>           options:<span class="built_in">NSRegularExpressionCaseInsensitive</span> error:<span class="literal">nil</span>];<span class="comment">// 测试出生日期的合法性</span></span><br><span class="line">            &#125;</span><br><span class="line">            numberofMatch = [regularExpression numberOfMatchesInString:value options:<span class="built_in">NSMatchingReportProgress</span> range:<span class="built_in">NSMakeRange</span>(<span class="number">0</span>, value.length)];</span><br><span class="line">            <span class="keyword">if</span>(numberofMatch &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line">            &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        <span class="keyword">case</span> <span class="number">18</span>:</span><br><span class="line">            year = [value substringWithRange:<span class="built_in">NSMakeRange</span>(<span class="number">6</span>,<span class="number">4</span>)].intValue;</span><br><span class="line">            <span class="keyword">if</span> (year % <span class="number">4</span> ==<span class="number">0</span> || (year % <span class="number">100</span> ==<span class="number">0</span> &amp;&amp; year % <span class="number">4</span> ==<span class="number">0</span>)) &#123;</span><br><span class="line">                regularExpression = [[<span class="built_in">NSRegularExpression</span> alloc] initWithPattern:<span class="string">@&quot;^[1-9][0-9]&#123;5&#125;19|20[0-9]&#123;2&#125;((01|03|05|07|08|10|12)(0[1-9]|[1-2][0-9]|3[0-1])|(04|06|09|11)(0[1-9]|[1-2][0-9]|30)|02(0[1-9]|[1-2][0-9]))[0-9]&#123;3&#125;[0-9Xx]$&quot;</span>options:<span class="built_in">NSRegularExpressionCaseInsensitive</span> error:<span class="literal">nil</span>];<span class="comment">// 测试出生日期的合法性</span></span><br><span class="line">                </span><br><span class="line">            &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                regularExpression = [[<span class="built_in">NSRegularExpression</span> alloc] initWithPattern:<span class="string">@&quot;^[1-9][0-9]&#123;5&#125;19|20[0-9]&#123;2&#125;((01|03|05|07|08|10|12)(0[1-9]|[1-2][0-9]|3[0-1])|(04|06|09|11)(0[1-9]|[1-2][0-9]|30)|02(0[1-9]|1[0-9]|2[0-8]))[0-9]&#123;3&#125;[0-9Xx]$&quot;</span></span><br><span class="line">                                                                         options:<span class="built_in">NSRegularExpressionCaseInsensitive</span> error:<span class="literal">nil</span>];<span class="comment">// 测试出生日期的合法性</span></span><br><span class="line">            &#125;</span><br><span class="line">            numberofMatch = [regularExpression numberOfMatchesInString:value options:<span class="built_in">NSMatchingReportProgress</span> range:<span class="built_in">NSMakeRange</span>(<span class="number">0</span>, value.length)];</span><br><span class="line">            <span class="keyword">if</span>(numberofMatch &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="type">int</span> S = ([value substringWithRange:<span class="built_in">NSMakeRange</span>(<span class="number">0</span>,<span class="number">1</span>)].intValue + [value substringWithRange:<span class="built_in">NSMakeRange</span>(<span class="number">10</span>,<span class="number">1</span>)].intValue) *<span class="number">7</span> + ([value substringWithRange:<span class="built_in">NSMakeRange</span>(<span class="number">1</span>,<span class="number">1</span>)].intValue + [value substringWithRange:<span class="built_in">NSMakeRange</span>(<span class="number">11</span>,<span class="number">1</span>)].intValue) *<span class="number">9</span> + ([value substringWithRange:<span class="built_in">NSMakeRange</span>(<span class="number">2</span>,<span class="number">1</span>)].intValue + [value substringWithRange:<span class="built_in">NSMakeRange</span>(<span class="number">12</span>,<span class="number">1</span>)].intValue) *<span class="number">10</span> + ([value substringWithRange:<span class="built_in">NSMakeRange</span>(<span class="number">3</span>,<span class="number">1</span>)].intValue + [value substringWithRange:<span class="built_in">NSMakeRange</span>(<span class="number">13</span>,<span class="number">1</span>)].intValue) *<span class="number">5</span> + ([value substringWithRange:<span class="built_in">NSMakeRange</span>(<span class="number">4</span>,<span class="number">1</span>)].intValue + [value substringWithRange:<span class="built_in">NSMakeRange</span>(<span class="number">14</span>,<span class="number">1</span>)].intValue) *<span class="number">8</span> + ([value substringWithRange:<span class="built_in">NSMakeRange</span>(<span class="number">5</span>,<span class="number">1</span>)].intValue + [value substringWithRange:<span class="built_in">NSMakeRange</span>(<span class="number">15</span>,<span class="number">1</span>)].intValue) *<span class="number">4</span> + ([value substringWithRange:<span class="built_in">NSMakeRange</span>(<span class="number">6</span>,<span class="number">1</span>)].intValue + [value substringWithRange:<span class="built_in">NSMakeRange</span>(<span class="number">16</span>,<span class="number">1</span>)].intValue) *<span class="number">2</span> + [value substringWithRange:<span class="built_in">NSMakeRange</span>(<span class="number">7</span>,<span class="number">1</span>)].intValue *<span class="number">1</span> + [value substringWithRange:<span class="built_in">NSMakeRange</span>(<span class="number">8</span>,<span class="number">1</span>)].intValue *<span class="number">6</span> + [value substringWithRange:<span class="built_in">NSMakeRange</span>(<span class="number">9</span>,<span class="number">1</span>)].intValue *<span class="number">3</span>;</span><br><span class="line">                <span class="type">int</span> Y = S % <span class="number">11</span>;</span><br><span class="line">                <span class="built_in">NSString</span> *M = <span class="string">@&quot;F&quot;</span>;</span><br><span class="line">                <span class="built_in">NSString</span> *JYM = <span class="string">@&quot;10X98765432&quot;</span>;</span><br><span class="line">                M = [JYM substringWithRange:<span class="built_in">NSMakeRange</span>(Y,<span class="number">1</span>)]; <span class="comment">// 判断校验位</span></span><br><span class="line">                <span class="keyword">if</span> ([M isEqualToString:[[value substringWithRange:<span class="built_in">NSMakeRange</span>(<span class="number">17</span>,<span class="number">1</span>)] uppercaseString]]) &#123;</span><br><span class="line">                    <span class="keyword">return</span> <span class="literal">YES</span>;<span class="comment">// 检测ID的校验位</span></span><br><span class="line">                &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            </span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的代码验证十分全面。</p>
+
+    </div>
+  </article>
+
+  <ul class="post-pager">
+    
+    <li class="previous">
+      <a href="/2016/06/16/CocosPods%E4%BD%BF%E7%94%A8%E8%BF%87%E7%A8%8B%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98%EF%BC%8C%E4%BB%A5%E5%8F%8A%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95/">← Previous Post</a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2016/06/08/RXSwift%E5%9F%BA%E7%A1%80/">Next Post →</a>
+    </li>
+    
+  </ul>
+
+  <div class="box-section shadow box-comment">
+    <!-- 
+  <section class="disqus-comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </section>
+
+  <script>
+    var disqus_shortname = 'jvaeyhcd';
+    
+    var disqus_url = 'http://example.com/2016/06/15/Objective-C%E8%BA%AB%E4%BB%BD%E8%AF%81%E9%AA%8C%E8%AF%81%E5%AE%9E%E7%8E%B0/';
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+  <script id="dsq-count-scr" src="//jvaeyhcd.disqus.com/count.js" async></script>
+
+
+ -->
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<div id="gitalk-container"></div>
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '29d526fe1e0f29d6b28c',
+        clientSecret: '1e5c674f3cbce0ba7d19045138d69ef800d5bd21',
+        id: window.location.pathname,
+        repo: 'jvaeyhcd.github.io',
+        owner: 'Jvaeyhcd',
+        admin: 'Jvaeyhcd'
+    })
+    gitalk.render('gitalk-container')
+</script>
+  </div>
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="layout-footer">
+    <div id="bottom-outer" class="container">
+  <div id="bottom-inner">
+    <span>
+    &copy; 2016-2022 John Doe using
+    <a style="color:#007fff;" target="_blank" rel="noopener" href="http://hexo.io">Hexo</a>.
+    </span>
+    
+      <div class="busuanzi-box">
+        <!-- 不蒜子统计 -->
+        <span id="busuanzi_container_site_pv">
+                本站总访问量<span id="busuanzi_value_site_pv"></span>次
+        </span>
+        <span class="post-meta-divider">|</span>
+        <span id="busuanzi_container_site_uv" style='display:none'>
+                本站访客数<span id="busuanzi_value_site_uv"></span>人
+        </span>
+      </div>
+    
+    <a class="footer-icon" target="_blank" rel="noopener" href="https://github.com/Jvaeyhcd"><i class="fab fa-github"></i></a>
+  </div>
+</div>
+<link href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css" rel="stylesheet">
+<button id="totop" class="back-top">
+  <i class="icon ion-md-arrow-dropup"></i>
+</button>
+
+<script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
+<script src="/js/back-top.js"></script>
+
+  </div>
+</div>
+
+
+
+  <!-- scripts list from theme config.yml -->
+  
+    <script src="/js/dexo.js"></script>
+  
+    <script src="/js/helper.js"></script>
+  
+
+
+</body>
+</html>

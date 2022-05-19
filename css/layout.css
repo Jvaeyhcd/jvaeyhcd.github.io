@@ -1,0 +1,97 @@
+.layout-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.layout-container .layout-header {
+  min-height: 49px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  z-index: 999;
+}
+
+.layout-container .layout-content {
+  min-height: 200px;
+  margin-top: 49px;
+}
+
+.layout-container .layout-footer {
+  min-height: 80px;
+  line-height: 80px;
+}
+
+.item-year {
+  position: relative;
+}
+
+a.text-year {
+  font-size: 20px;
+  font-weight: bold;
+  font-weight: bold;
+  color: #222;
+}
+
+.item-title {
+  position: relative;
+}
+
+.item-title:before {
+  width: 10px;
+  height: 10px;
+  content: ' ';
+  border-radius: 50%;
+  display: block;
+  position: absolute;
+  top: 8px;
+  left: calc(-5px - 1.5rem);
+}
+
+.item-title.item-title-0:before {
+  background: #1abc9c;
+}
+
+.item-title.item-title-1:before {
+  background: #3498db;
+}
+
+.item-title.item-title-2:before {
+  background: #9b59b6;
+}
+
+.item-title.item-title-3:before {
+  background: #e67e22;
+}
+
+.item-title.item-title-4:before {
+  background: #e74c3c;
+}
+
+.timeline-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #222;
+}
+
+.footer-icon {
+  float: right;
+  margin-left: 12px;
+  font-size: 24px;
+  color: #71777c;
+}
+
+.tags-box {
+  padding: 40px;
+}
+
+.tags-box a {
+  display: inline-block;
+  margin: 10px;
+}
+
+.about-box {
+  margin-left: 1rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}

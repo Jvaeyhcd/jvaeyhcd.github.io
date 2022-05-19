@@ -1,0 +1,208 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>objc过滤NSString中的HTML标签 [ Hexo ]</title>
+  <link rel="shortcut icon" href="/img/favicon.ico">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  
+    <!-- stylesheets list from _config.yml -->
+    
+      <link rel="stylesheet" href="/css/dexo.css">
+    
+      <link rel="stylesheet" href="/css/custom.css">
+    
+      <link rel="stylesheet" href="/css/post.css">
+    
+      <link rel="stylesheet" href="/css/page.css">
+    
+      <link rel="stylesheet" href="/css/layout.css">
+    
+      <link rel="stylesheet" href="/css/font-awesome.min.css">
+    
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+<body>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+<div class="layout-container">
+  <div class="layout-header">
+    
+
+<div class="main-nav">
+  
+  <div class="container">
+    <header class="group top-nav">
+      <nav class="navbar logo-w navbar-left">
+        <a href="/" class="logo">Hexo</a>
+      </nav>
+      <div class="navigation-toggle" onClick="hideShowMenu()">
+        <span class="logo">Hexo</span>
+      </div>
+      <nav id="navbar-menu" class="navbar item-nav navbar-right">
+        <ul>
+          
+            <li><a href="/">Home</a></li>
+          
+            <li><a href="/archives">Archives</a></li>
+          
+            <li><a href="/tag">Tags</a></li>
+          
+            <li><a target="_blank" rel="noopener" href="https://github.com/Jvaeyhcd">Github</a></li>
+          
+        </ul>
+      </nav>
+    </header>
+  </div>
+</div>
+  </div>
+  <div class="layout-content">
+    <div id="content-outer" class="container container-box">
+      <div id="content-inner" class="content-view">
+        <div class="post-content-box">
+  <article id="post" class="post-detail-box box-section shadow">
+    <div class="post-title">
+      objc过滤NSString中的HTML标签
+    </div>
+    <div class="post-base-box">
+      <time datetime="2016-05-04T03:17:29.000Z">
+        Posted on 2016-05-04
+      </time>
+      
+        <div class="category-item">
+          In
+          <a class="category-link-grey-link" href="/categories/%E7%BB%8F%E9%AA%8C%E7%A7%AF%E7%B4%AF/">经验积累</a>
+        </div>
+      
+      <span id="busuanzi_container_page_pv">
+        &nbsp;visitors <span id="busuanzi_value_page_pv"></span>
+      </span>
+    </div>
+    <div class="post-body">
+      <p>开发过程中常常会遇到这样一个情况：对于后台编辑的一些文本都是使用富文本的形式进行编辑的，我们在使用接口区请求数据的时候，请求到的数据是带HTML标签的富文本形式，但是我们前台是使用UIlabel去显示的，这个时候就需要去掉NSString的HTML标签。</p>
+<h2 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h2><p>对于这种常用的一些方法，我们一般会创建一个NSString的Category去实现。关于去掉NSString中HTML标签的实现方法我在网上找到了两种实现方式：</p>
+<h3 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h3><p>用NSScanner扫描来处理</p>
+<span id="more"></span>
+
+<p>NSString+Jvaeyhcd.h</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">NSString</span> (<span class="title">Jvaeyhcd</span>)</span></span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSString</span> *)removeHTML;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<p>NSString+Jvaeyhcd.m</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">NSString</span> *)removeHTML &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">NSScanner</span> *theScanner;</span><br><span class="line">    <span class="built_in">NSString</span> *text = <span class="literal">nil</span>;</span><br><span class="line">    </span><br><span class="line">    theScanner = [<span class="built_in">NSScanner</span> scannerWithString:<span class="keyword">self</span>];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> ([theScanner isAtEnd] == <span class="literal">NO</span>) &#123;</span><br><span class="line">        <span class="comment">// find start of tag</span></span><br><span class="line">        [theScanner scanUpToString:<span class="string">@&quot;&lt;&quot;</span> intoString:<span class="literal">NULL</span>] ;</span><br><span class="line">        <span class="comment">// find end of tag</span></span><br><span class="line">        [theScanner scanUpToString:<span class="string">@&quot;&gt;&quot;</span> intoString:&amp;text] ;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// replace the found tag with a space</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">//(you can filter multi-spaces out later if you wish)</span></span><br><span class="line">        </span><br><span class="line">        <span class="keyword">self</span> = [<span class="keyword">self</span> stringByReplacingOccurrencesOfString:[<span class="built_in">NSString</span> stringWithFormat:<span class="string">@&quot;%@&gt;&quot;</span>, text] withString:<span class="string">@&quot; &quot;</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h3><p>用NSString自带的Seprated自截断方法</p>
+<p>NSString+Jvaeyhcd.h</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">NSString</span> (<span class="title">Jvaeyhcd</span>)</span></span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSString</span> *)removeHTML2;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<p>NSString+Jvaeyhcd.m</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">NSString</span> *)removeHTML2 &#123;</span><br><span class="line">    <span class="built_in">NSArray</span> *components = [<span class="keyword">self</span> componentsSeparatedByCharactersInSet:[<span class="built_in">NSCharacterSet</span> characterSetWithCharactersInString:<span class="string">@&quot;&lt;&gt;&quot;</span>]];</span><br><span class="line">    <span class="built_in">NSMutableArray</span> *componentsToKeep = [<span class="built_in">NSMutableArray</span> array];</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; [components count]; i = i + <span class="number">2</span>) &#123;</span><br><span class="line">        [componentsToKeep addObject:[components objectAtIndex:i]];</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">NSString</span> *plainText = [componentsToKeep componentsJoinedByString:<span class="string">@&quot;&quot;</span>];</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> plainText;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    </div>
+  </article>
+
+  <ul class="post-pager">
+    
+    <li class="previous">
+      <a href="/2016/05/16/%E5%85%B3%E9%97%ADiOS%E7%B3%BB%E7%BB%9F%E8%87%AA%E5%8A%A8%E6%9B%B4%E6%96%B0%E6%8F%90%E7%A4%BA%E7%9A%84%E6%96%B9%E6%B3%95/">← Previous Post</a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2016/04/29/Swift%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%9F%BA%E7%A1%80%E9%83%A8%E5%88%86/">Next Post →</a>
+    </li>
+    
+  </ul>
+
+  <div class="box-section shadow box-comment">
+    <!-- 
+  <section class="disqus-comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </section>
+
+  <script>
+    var disqus_shortname = 'jvaeyhcd';
+    
+    var disqus_url = 'http://example.com/2016/05/04/Objective-C%E8%BF%87%E6%BB%A4NSString%E4%B8%AD%E7%9A%84HTML%E6%A0%87%E7%AD%BE/';
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+  <script id="dsq-count-scr" src="//jvaeyhcd.disqus.com/count.js" async></script>
+
+
+ -->
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<div id="gitalk-container"></div>
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '29d526fe1e0f29d6b28c',
+        clientSecret: '1e5c674f3cbce0ba7d19045138d69ef800d5bd21',
+        id: window.location.pathname,
+        repo: 'jvaeyhcd.github.io',
+        owner: 'Jvaeyhcd',
+        admin: 'Jvaeyhcd'
+    })
+    gitalk.render('gitalk-container')
+</script>
+  </div>
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="layout-footer">
+    <div id="bottom-outer" class="container">
+  <div id="bottom-inner">
+    <span>
+    &copy; 2016-2022 John Doe using
+    <a style="color:#007fff;" target="_blank" rel="noopener" href="http://hexo.io">Hexo</a>.
+    </span>
+    
+      <div class="busuanzi-box">
+        <!-- 不蒜子统计 -->
+        <span id="busuanzi_container_site_pv">
+                本站总访问量<span id="busuanzi_value_site_pv"></span>次
+        </span>
+        <span class="post-meta-divider">|</span>
+        <span id="busuanzi_container_site_uv" style='display:none'>
+                本站访客数<span id="busuanzi_value_site_uv"></span>人
+        </span>
+      </div>
+    
+    <a class="footer-icon" target="_blank" rel="noopener" href="https://github.com/Jvaeyhcd"><i class="fab fa-github"></i></a>
+  </div>
+</div>
+<link href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css" rel="stylesheet">
+<button id="totop" class="back-top">
+  <i class="icon ion-md-arrow-dropup"></i>
+</button>
+
+<script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
+<script src="/js/back-top.js"></script>
+
+  </div>
+</div>
+
+
+
+  <!-- scripts list from theme config.yml -->
+  
+    <script src="/js/dexo.js"></script>
+  
+    <script src="/js/helper.js"></script>
+  
+
+
+</body>
+</html>

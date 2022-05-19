@@ -1,0 +1,399 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>iOS高级开发面试题（中） [ Hexo ]</title>
+  <link rel="shortcut icon" href="/img/favicon.ico">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  
+    <!-- stylesheets list from _config.yml -->
+    
+      <link rel="stylesheet" href="/css/dexo.css">
+    
+      <link rel="stylesheet" href="/css/custom.css">
+    
+      <link rel="stylesheet" href="/css/post.css">
+    
+      <link rel="stylesheet" href="/css/page.css">
+    
+      <link rel="stylesheet" href="/css/layout.css">
+    
+      <link rel="stylesheet" href="/css/font-awesome.min.css">
+    
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+<body>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+<div class="layout-container">
+  <div class="layout-header">
+    
+
+<div class="main-nav">
+  
+  <div class="container">
+    <header class="group top-nav">
+      <nav class="navbar logo-w navbar-left">
+        <a href="/" class="logo">Hexo</a>
+      </nav>
+      <div class="navigation-toggle" onClick="hideShowMenu()">
+        <span class="logo">Hexo</span>
+      </div>
+      <nav id="navbar-menu" class="navbar item-nav navbar-right">
+        <ul>
+          
+            <li><a href="/">Home</a></li>
+          
+            <li><a href="/archives">Archives</a></li>
+          
+            <li><a href="/tag">Tags</a></li>
+          
+            <li><a target="_blank" rel="noopener" href="https://github.com/Jvaeyhcd">Github</a></li>
+          
+        </ul>
+      </nav>
+    </header>
+  </div>
+</div>
+  </div>
+  <div class="layout-content">
+    <div id="content-outer" class="container container-box">
+      <div id="content-inner" class="content-view">
+        <div class="post-content-box">
+  <article id="post" class="post-detail-box box-section shadow">
+    <div class="post-title">
+      iOS高级开发面试题（中）
+    </div>
+    <div class="post-base-box">
+      <time datetime="2017-08-06T03:44:34.000Z">
+        Posted on 2017-08-06
+      </time>
+      
+        <div class="category-item">
+          In
+          <a class="category-link-grey-link" href="/categories/%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/">知识汇总</a>
+        </div>
+      
+      <span id="busuanzi_container_page_pv">
+        &nbsp;visitors <span id="busuanzi_value_page_pv"></span>
+      </span>
+    </div>
+    <div class="post-body">
+      <h2 id="block在arc和非arc下含义一样吗？"><a href="#block在arc和非arc下含义一样吗？" class="headerlink" title="__block在arc和非arc下含义一样吗？"></a>__block在arc和非arc下含义一样吗？</h2><p>一般在block中修改变量多需要事先加<code>__block</code>进行修饰。在非arc下，<code>__block</code>修饰的变量的引用计数是不变的，在arc下会引用到计数+1。非arc中使用<code>__block</code>解决循环引用问题，在arc中使用<code>__weak</code>解决循环引用问题。</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//非ARC</span></span><br><span class="line">__block <span class="keyword">typeof</span>(<span class="keyword">self</span>) weakSelf = <span class="keyword">self</span>;</span><br><span class="line"><span class="comment">//ARC</span></span><br><span class="line">__<span class="keyword">weak</span> <span class="keyword">typeof</span>(<span class="keyword">self</span>) weakSelf = <span class="keyword">self</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">self</span>.myBlock = ^(<span class="type">int</span> paramInt)&#123; </span><br><span class="line"><span class="comment">//使用weakSelf访问self成员</span></span><br><span class="line"> [weakSelf anotherFunc];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+<h2 id="什么是method-swizzling"><a href="#什么是method-swizzling" class="headerlink" title="什么是method swizzling?"></a>什么是method swizzling?</h2><p>method swizzling就是通过Runtime机制，将两个实现调换。如图看起来比较形象：</p>
+
+
+<p>具体做法是，首先建立自己的方法，然后在<code>+load</code>方法中去实现方法交换的代码。（以下调换实现的方法要在<code>+load</code>中执行）</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Method ori_Method =  class_getInstanceMethod([MYclass <span class="keyword">class</span>], <span class="keyword">@selector</span>(lastObject));  </span><br><span class="line">Method my_Method = class_getInstanceMethod([MYclass <span class="keyword">class</span>], <span class="keyword">@selector</span>(myLastObject));  </span><br><span class="line">method_exchangeImplementations(ori_Method, my_Method);</span><br></pre></td></tr></table></figure>
+<p>方法的交换是在<code>+load</code>中进行交换的。</p>
+<h2 id="如何高性能的给UIImageView加个圆角？"><a href="#如何高性能的给UIImageView加个圆角？" class="headerlink" title="如何高性能的给UIImageView加个圆角？"></a>如何高性能的给UIImageView加个圆角？</h2><h3 id="不好的解决方法"><a href="#不好的解决方法" class="headerlink" title="不好的解决方法"></a>不好的解决方法</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">self</span>.imageView.layer.cornerRadius = <span class="number">5</span>;</span><br><span class="line"><span class="keyword">self</span>.imageView.layer.masksToBounds = <span class="literal">YES</span>;</span><br></pre></td></tr></table></figure>
+<p>上面的方式会强制Core Animation提前渲染屏幕的离屏绘制，而离屏绘制就会给性能带来负面影响，会有卡顿的现象出现。</p>
+<h3 id="真正的解决方案：使用绘图技术"><a href="#真正的解决方案：使用绘图技术" class="headerlink" title="真正的解决方案：使用绘图技术"></a>真正的解决方案：使用绘图技术</h3><p>通过绘图技术给<code>UIImageview</code>添加一个分类，使用下面代码，取保添加圆角时<code>imageView.image</code>不为<code>nil</code>。</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#import <span class="string">&quot;UIImageView+cornerRadius.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">UIImageView</span> (<span class="title">cornerRadius</span>)</span></span><br><span class="line"></span><br><span class="line">- (<span class="type">void</span>)quickSetCornerRadius:(<span class="built_in">CGFloat</span>)cornerRadius &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">self</span>.image != <span class="literal">nil</span>) &#123;</span><br><span class="line">        <span class="keyword">self</span>.image = [<span class="keyword">self</span>.image imageAddCornerWithRadius:cornerRadius andSize:<span class="keyword">self</span>.bounds.size];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">UIImage</span> (<span class="title">cornerRadius</span>)</span></span><br><span class="line">- (<span class="built_in">UIImage</span> *)imageAddCornerWithRadius:(<span class="built_in">CGFloat</span>)radius andSize:(<span class="built_in">CGSize</span>)size &#123;</span><br><span class="line">    <span class="comment">// NO代表透明</span></span><br><span class="line">    <span class="built_in">UIGraphicsBeginImageContextWithOptions</span>(size, <span class="literal">NO</span>, <span class="number">0.0</span>);</span><br><span class="line">    <span class="comment">// 获取上下文</span></span><br><span class="line">    <span class="built_in">CGContextRef</span> ctx = <span class="built_in">UIGraphicsGetCurrentContext</span>();</span><br><span class="line">    <span class="comment">// 添加一个圆</span></span><br><span class="line">    <span class="built_in">CGRect</span> rect = <span class="built_in">CGRectMake</span>(<span class="number">0</span>, <span class="number">0</span>, size.width, size.height);</span><br><span class="line">    <span class="built_in">CGContextAddEllipseInRect</span>(ctx, rect);</span><br><span class="line">    <span class="comment">// 裁剪</span></span><br><span class="line">    <span class="built_in">CGContextClip</span>(ctx);</span><br><span class="line">    <span class="comment">// 将图片画上去</span></span><br><span class="line">    [<span class="keyword">self</span> drawInRect:rect];</span><br><span class="line">    <span class="comment">// 得到画上的图像</span></span><br><span class="line">    <span class="built_in">UIImage</span> *image = <span class="built_in">UIGraphicsGetImageFromCurrentImageContext</span>();</span><br><span class="line">    <span class="comment">// 关闭上下文</span></span><br><span class="line">    <span class="built_in">UIGraphicsEndImageContext</span>();</span><br><span class="line">    <span class="keyword">return</span> image;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="使用了贝塞尔曲线”切割”个这个图片"><a href="#使用了贝塞尔曲线”切割”个这个图片" class="headerlink" title="使用了贝塞尔曲线”切割”个这个图片"></a>使用了贝塞尔曲线”切割”个这个图片</h3><p>与上面的方法一致都是通过绘图产生新的<code>UIImage</code>，这里只是将<code>CGContextAddEllipseInRect</code>画圆换成了<code>UIBezierPath bezierPathWithRoundedRect:</code>。给UIImageview添加一个分类方法<code>- (void)bezierCornerRadius:(CGFloat)cornerRadius</code>。</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="type">void</span>)bezierCornerRadius:(<span class="built_in">CGFloat</span>)cornerRadius &#123;</span><br><span class="line">    <span class="built_in">UIImage</span> *newImage = <span class="keyword">self</span>.image;</span><br><span class="line">    <span class="comment">// NO代表透明</span></span><br><span class="line">    <span class="built_in">UIGraphicsBeginImageContextWithOptions</span>(<span class="keyword">self</span>.bounds.size, <span class="literal">NO</span>, <span class="number">1.0</span>);</span><br><span class="line">    <span class="comment">// 获取上下文，用Bezier曲线画圆，并裁剪</span></span><br><span class="line">    [[<span class="built_in">UIBezierPath</span> bezierPathWithRoundedRect:<span class="keyword">self</span>.bounds cornerRadius:cornerRadius] addClip];</span><br><span class="line">    <span class="comment">// 将图片画进裁剪的图形中</span></span><br><span class="line">    [newImage drawInRect:<span class="keyword">self</span>.bounds];</span><br><span class="line">    <span class="comment">// 将画布中新得到的图形设置为UIImageview的image</span></span><br><span class="line">    <span class="keyword">self</span>.image = <span class="built_in">UIGraphicsGetImageFromCurrentImageContext</span>();</span><br><span class="line">    <span class="comment">// 关闭上下文</span></span><br><span class="line">    <span class="built_in">UIGraphicsEndImageContext</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用<code>[imageView quickSetCornerRadius:50];</code>就可以给<code>imageView</code>添加半径为50的圆角。</p>
+<h2 id="UIView和CALayer是什么关系？"><a href="#UIView和CALayer是什么关系？" class="headerlink" title="UIView和CALayer是什么关系？"></a>UIView和CALayer是什么关系？</h2><p>UIView和CALayer有一下区别：</p>
+<ul>
+<li><code>UIView</code>可以响应事件，<code>CALayer</code>不能响应事件</li>
+<li><code>UIView</code>主要是对显示内容的管理而 <code>CALayer</code> 主要侧重显示内容的绘制</li>
+<li>每个UIView内部都有一个CALayer在背后提供内容的绘制和显示，并且UIView的尺寸和样式都由内部的CALayer所提供。两者都由树状层级结构，<code>CALayer</code>内部有<code>sublayers</code>，<code>UIView</code>内部有<code>subViews</code>。但是<code>CALayer</code>比<code>UIView</code>多了个<code>AnchorPoint</code>。</li>
+<li>在UIView显示的时候，UIView作为<code>CALayer</code>的<code>CALayerDelegate</code>，<code>UIView</code>的显示内容由内部的<code>CALayer</code>的<code>dispaly</code>。</li>
+<li><code>CALayer</code>是默认修改属性支撑隐形动画的，在给UIVIiew的Layer做动画的时候，UIView作为CALayer的代理，CALayer通过<code>actionForLayer:forKey:</code>向UIView请求相应的action（动画）。</li>
+<li><code>CALayer</code>内部维护着三份<code>layer tree</code>，分别是<code>presentLayer Tree</code>（动画树）、<code>modeLayer Tree</code>（模型树）、<code>render Tree</code>（渲染树），在做iOS动画的时候，我们修改动画的属性其实是<code>CALayer</code>的<code>presentLayer</code>属性值，而最终展示在界面上的实际是UIView的modalLayer。</li>
+</ul>
+<p>参考详解：<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/079e5cf0f014">https://www.jianshu.com/p/079e5cf0f014</a></p>
+<h2 id="使用drawRect有什么影响？"><a href="#使用drawRect有什么影响？" class="headerlink" title="使用drawRect有什么影响？"></a>使用drawRect有什么影响？</h2><p><code>drawRect</code>方法依赖Core Graphics框架来进行自定义绘制，这种方法的主要缺点是处理touch时间的时候，都会用<code>setNeddsDisplay</code>进行强制重绘（比如每次点击按钮的时候都会被强制重绘）；并且不不止一次，每次单点事件触发两次执行。这样的话从性能角度来说，对CPU和内存使用上都是欠佳的（特别是在界面上有多个<code>UIButton</code>）。</p>
+<h2 id="设计简单的图片内存缓存器"><a href="#设计简单的图片内存缓存器" class="headerlink" title="设计简单的图片内存缓存器"></a>设计简单的图片内存缓存器</h2><p>写一个FIFO的存储机制，设置一定量的内存大小。每次添加新的图片后检查是否超出容量，如果超出则释放队列最前面的图片。</p>
+<h2 id="用过coreData或者sqlite吗？读写是分线程的吗？遇到过死锁没？如何解决？"><a href="#用过coreData或者sqlite吗？读写是分线程的吗？遇到过死锁没？如何解决？" class="headerlink" title="用过coreData或者sqlite吗？读写是分线程的吗？遇到过死锁没？如何解决？"></a>用过coreData或者sqlite吗？读写是分线程的吗？遇到过死锁没？如何解决？</h2><p>如果要求不是特别高，推荐在同一个线程中读写，这样比较省事，当然如果你必须要CoreData多线程，需要注意：</p>
+<ol>
+<li>只用一个<code>NSPersistentStoreCoordinator</code>。</li>
+<li>每个线程创建一个<code>NSManagedObjectContext</code>。</li>
+<li>不要传递<code>NSManagedObject</code>，传objectID，通过fetch获得。</li>
+<li>先存后取，利用<code>NSManagedObjectContext-mergeChangesFromContextDidSaveNotification:</code>。</li>
+</ol>
+<h2 id="什么是二叉搜索树？search的时间复杂度是多少"><a href="#什么是二叉搜索树？search的时间复杂度是多少" class="headerlink" title="什么是二叉搜索树？search的时间复杂度是多少?"></a>什么是二叉搜索树？search的时间复杂度是多少?</h2><p>二叉搜索树是一种节点值之间具有一定数量级次序的二叉树，对于树中每个节点：</p>
+<ul>
+<li>若其左子树存在，则其左子树中每个节点的值都不大于该节点值；</li>
+<li>若其右子树存在，则其右子树中每个节点的值都不小于该节点值。</li>
+</ul>
+<p>搜索的时间复杂度为O(log(n))~O(n)。</p>
+<h2 id="loadView是干嘛用的？"><a href="#loadView是干嘛用的？" class="headerlink" title="loadView是干嘛用的？"></a><code>loadView</code>是干嘛用的？</h2><ul>
+<li>作用: 加载控制器（<code>UIViewController</code>）的<code>view</code>。</li>
+<li>调用时间：第一次使用控制器view的时候。</li>
+</ul>
+<p>关于<code>loadView</code>的一些理解：</p>
+<ul>
+<li>只要重写<code>loadView</code>，里面就不要调用<code>[super loadView]</code>，因为如果我们重写了<code>loadView</code>的方法，就代表着我们需要初始化的是自己创建的<code>view</code>，而不再是系统默认的<code>view</code>，如果再调用<code>[super loadView]</code>就显得多余了。<code>[super loadView]</code>会去判断有没有指定storyboard，如果有，就会帮你加载storyborad描述的控制器的<code>view</code>。</li>
+<li>在<code>loadView</code>方法中，如果没有给控制器的<code>view</code>赋值，就不能获取控制器的<code>view</code>，否则会造成死循环。</li>
+</ul>
+<h2 id="viewWillLayoutSubView的调用情况？"><a href="#viewWillLayoutSubView的调用情况？" class="headerlink" title="viewWillLayoutSubView的调用情况？"></a><code>viewWillLayoutSubView</code>的调用情况？</h2><p><code>viewWillLayoutSubView</code>在以下情况会被调用：</p>
+<ul>
+<li>在<code>UIView</code>init初始化的时候<code>viewWillLayoutSubView</code>不会被调用，但是用<code>initWithFrame:</code>进行初始化时，当rect的值不为<code>CGRectZero</code>时会触发<code>viewWillLayoutSubview</code>。</li>
+<li><code>addSubview</code>时会触发<code>viewWillLayoutSubview</code>。</li>
+<li>设置<code>view</code>的<code>frame</code>时会触发<code>viewWillLayoutSubview</code>，当然前提是设置前后的<code>frame</code>值发生了变化。</li>
+<li>滚动一个<code>UIScrollView</code>时会触发<code>viewWillLayoutSubview</code>。</li>
+<li>旋转<code>UIScreen</code>时会触发父<code>UIView</code>上的<code>viewWillLayoutSubview</code>。</li>
+</ul>
+<h2 id="如何让自己的类用copy修饰符？如何重写带copy关键字的setter？"><a href="#如何让自己的类用copy修饰符？如何重写带copy关键字的setter？" class="headerlink" title="如何让自己的类用copy修饰符？如何重写带copy关键字的setter？"></a>如何让自己的类用<code>copy</code>修饰符？如何重写带<code>copy</code>关键字的setter？</h2><p>遵循<code>NSCopying</code>协议并实现<code>copyWithZone</code>方法就可以让自己的类使用<code>copy</code>修饰符修饰。</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="type">void</span>)setName:(<span class="built_in">NSString</span> *)name &#123;</span><br><span class="line">    _name = [name <span class="keyword">copy</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的方法可以重写带<code>copy</code>关键字的setter。<br>如果是只读属性可以在初始化<code>init</code>函数中完成对<code>copy</code>修饰关键字的赋值。</p>
+<h2 id="protocol-和-category-中如何使用-property"><a href="#protocol-和-category-中如何使用-property" class="headerlink" title="@protocol 和 category 中如何使用 @property"></a>@protocol 和 category 中如何使用 @property</h2><p>建立关联引用。详情请见<a target="_blank" rel="noopener" href="https://jvaeyhcd.github.io/2018/08/08/%E3%80%90iOS%E3%80%91Runtime%E5%BA%94%E7%94%A8/">【iOS】Runtime引用</a>一文中 ”关联对象（Objective-C Associated Objects）给分类添加属性“。</p>
+<h2 id="runtime-如何实现-weak-属性"><a href="#runtime-如何实现-weak-属性" class="headerlink" title="runtime 如何实现 weak 属性"></a>runtime 如何实现 weak 属性</h2><p>weak关键字表明该属性定义了一种“非拥有关系”（nonowning relationship）。为这种属性设置新值时，设置方法既不保留新值，又不释放旧值。此特质与<code>assign</code>类似，然而在属性所指的对象遭到摧毁时，属性值也会清空(nil out)。</p>
+<p>那么runtime如何实现weak变量的自动置为nil？</p>
+<p>在runtime中对注册的类进行管理，对于<code>weak</code>对象将会放入<code>hash</code>表中。用weak指向的内存地址作为key,当此对象的引用计数为0的时候回dealloc，加入weak指向的内存地址是a，那么就会以a为键，在这个weak表中搜索，找到键为a的weak对象，从而设置为nil。</p>
+<h2 id="property-的本质是什么？ivar、getter、setter-是如何生成并添加到这个类中的"><a href="#property-的本质是什么？ivar、getter、setter-是如何生成并添加到这个类中的" class="headerlink" title="@property 的本质是什么？ivar、getter、setter 是如何生成并添加到这个类中的"></a>@property 的本质是什么？ivar、getter、setter 是如何生成并添加到这个类中的</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/u011774517/article/details/56013365">https://blog.csdn.net/u011774517/article/details/56013365</a></p>
+<h3 id="property的本质是什么？"><a href="#property的本质是什么？" class="headerlink" title="@property的本质是什么？"></a>@property的本质是什么？</h3><p><code>@property</code>的本质就是：@property = ivar + getter + setter;<br>属性（property）有两大概念：ivar（实例变量）、存取方法（access method ＝ getter + setter）</p>
+<p>“属性” (property)作为 Objective-C 的一项特性，主要的作用就在于封装对象中的数据。 Objective-C 对象通常会把其所需要的数据保存为各种实例变量。实例变量一般通过“存取方法”(access method)来访问。</p>
+<p>例如下面的类：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Person</span> : <span class="title">NSObject</span></span></span><br><span class="line"><span class="keyword">@property</span> <span class="built_in">NSString</span> *firstName;</span><br><span class="line"><span class="keyword">@property</span> <span class="built_in">NSString</span> *lastName;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>上述代码写出来与下面这种写法等效：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Person</span> : <span class="title">NSObject</span></span></span><br><span class="line">- (<span class="built_in">NSString</span> *)firstName;</span><br><span class="line">- (<span class="type">void</span>)setFirstName:(<span class="built_in">NSString</span> *)firstName;</span><br><span class="line">- (<span class="built_in">NSString</span> *)lastName;</span><br><span class="line">- (<span class="type">void</span>)setLastName:(<span class="built_in">NSString</span> *)lastName;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="ivar、getter、setter是如何生成并添加到这个类中的？"><a href="#ivar、getter、setter是如何生成并添加到这个类中的？" class="headerlink" title="ivar、getter、setter是如何生成并添加到这个类中的？"></a>ivar、getter、setter是如何生成并添加到这个类中的？</h3><p>自动合成（autosynthesize）</p>
+<p>完成属性定义后，编译器会自动编写访问这些属性所需的方法，此过程叫做自动合成（autosynthesize）。这个过程由编译器在编译执行期间执行，所以编辑器里看不到这些合成方法（synthesized method）的源码。除了生成方法代码getter、setter之外，编译器还要自动向类中适当添加类型的实例变量，并且在属性名前加下划线，以此作为实例变量的名字。</p>
+<h2 id="synthesize和-dynamic分别有什么作用？"><a href="#synthesize和-dynamic分别有什么作用？" class="headerlink" title="@synthesize和@dynamic分别有什么作用？"></a>@synthesize和@dynamic分别有什么作用？</h2><ol>
+<li><p><code>@propert</code>有两个对应的词，一个是<code>@synthesize</code>，一个是<code>@dynamic</code>。如果<code>@synthesize</code>和<code>@dynamic</code>都没有写，那么默认的就是<code>@syntheszie var = _var;</code>。</p>
+</li>
+<li><p><code>@synthesize</code>的语意是如果你没有手动实现setter和getter方法，那么编译器会自动给你加上这两个方法。</p>
+</li>
+<li><p><code>@dynamic</code>告诉编译器setter和getter方法由用户自己实现，不自动生成。（对于readonly属性的字需要提供getter即可）。</p>
+</li>
+</ol>
+<h2 id="ARC下，不显式指定任何属性关键字时，默认的关键字都有哪些？"><a href="#ARC下，不显式指定任何属性关键字时，默认的关键字都有哪些？" class="headerlink" title="ARC下，不显式指定任何属性关键字时，默认的关键字都有哪些？"></a>ARC下，不显式指定任何属性关键字时，默认的关键字都有哪些？</h2><p>分两种情况，对于基本数据类型默认关键字是<code>(atomic,readwrite,assign)</code>，对于普通的OC对象默认关键字是<code>(atomic,readwrite,strong)</code>。</p>
+<h2 id="扩展（Extension）和分类（Category）的区别？"><a href="#扩展（Extension）和分类（Category）的区别？" class="headerlink" title="扩展（Extension）和分类（Category）的区别？"></a>扩展（Extension）和分类（Category）的区别？</h2><p>推荐使用Category，Category可以：</p>
+<ul>
+<li>给已经存在的类添加方法</li>
+<li>把类的方法分开在不同的文件中，这样的优点有：<ul>
+<li>减少单个文件的体积</li>
+<li>把不同功能组织在不同的category文件中</li>
+<li>多个开发者可以共同完成一个类</li>
+<li>按照需求加载想要加载的category</li>
+</ul>
+</li>
+<li>声明私有和公用方法</li>
+</ul>
+<h3 id="category和extension的区别1"><a href="#category和extension的区别1" class="headerlink" title="category和extension的区别1"></a>category和extension的区别1</h3><ul>
+<li><p>category：类别，分类</p>
+<ul>
+<li>专门用来给类添加新的方法</li>
+<li>通常不能给类添加属性，添加了成员变量也获取不到（但是通过Runtime可以给类添加属性）</li>
+<li>分类（Category）中@property定义变量，只会生成变量的getter，setter方法申明，没有方法实现和带下划线的成员变量</li>
+<li>分类会覆盖类的方法，如果分类的方法与类本来的方法同名，则会覆盖类的方法</li>
+</ul>
+</li>
+<li><p>extension：扩展</p>
+<ul>
+<li>扩展可以说是特殊的分类，也称做匿名分类</li>
+<li>可以给类添加成员属性，但是是私有的</li>
+<li>可以给类添加成员方法，但是是私有方法</li>
+<li>伴随着类的产生而产生，与随着类的消失而消失</li>
+<li>extension一般用来隐藏类的私有方法，必须要有一个类的源码才能添加一个类的extension，所以对于一些系统类NSString就无法添加扩展</li>
+</ul>
+</li>
+</ul>
+<h2 id="如何实现A、B请求完成后，再执行C请求？"><a href="#如何实现A、B请求完成后，再执行C请求？" class="headerlink" title="如何实现A、B请求完成后，再执行C请求？"></a>如何实现A、B请求完成后，再执行C请求？</h2><p>基本思路是使用iOS的gcd异步请求A、B完成后汇总结果，然后再执行C请求。</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="type">void</span>)gcdGroup &#123;</span><br><span class="line">    <span class="built_in">dispatch_queue_t</span> queue = dispatch_queue_create(<span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    dispatch_group_t group = dispatch_group_create();</span><br><span class="line">    </span><br><span class="line">    dispatch_group_async(group, queue, ^&#123;</span><br><span class="line">        <span class="comment">// 任务A</span></span><br><span class="line">    &#125;);</span><br><span class="line">    dispatch_group_async(group, queue, ^&#123;</span><br><span class="line">        <span class="comment">// 任务B</span></span><br><span class="line">    &#125;);</span><br><span class="line">    </span><br><span class="line">    dispatch_group_notify(group, dispatch_get_main_queue(), ^&#123;</span><br><span class="line">        <span class="comment">// 任务C</span></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="synthesize合成实例变量的规则是什么？假如property名为foo，存在一个名为-foo的实例变量，那么还会自动合成新变量么？"><a href="#synthesize合成实例变量的规则是什么？假如property名为foo，存在一个名为-foo的实例变量，那么还会自动合成新变量么？" class="headerlink" title="@synthesize合成实例变量的规则是什么？假如property名为foo，存在一个名为_foo的实例变量，那么还会自动合成新变量么？"></a>@synthesize合成实例变量的规则是什么？假如property名为foo，存在一个名为_foo的实例变量，那么还会自动合成新变量么？</h2><p>实例变量 = 成员变量 = ivar</p>
+<p><code>@synthesize</code>合成实例变量的规则，有一下几点：</p>
+<ul>
+<li>如果指定了成员变量的名称，会生成一个指定名称的成员变量</li>
+<li>如果这个成员变量存在了就不会再生成了</li>
+<li>如果是<code>@synthesize foo;</code>会生成一个名称为foo的成员变量，也就是说：如果没有指定成员变量的名称会生成一个和属性同名的成员变量</li>
+<li>如果是<code>@synthesize foo = _foo;</code>，就不会生成成员变量了<br><br>加入property名为foo，存在一个名为_foo的实例变量，就不会再自动合成新变量。</li>
+</ul>
+<h2 id="在有了自动合成属性实例变量之后，-synthesize还有哪些使用场景？"><a href="#在有了自动合成属性实例变量之后，-synthesize还有哪些使用场景？" class="headerlink" title="在有了自动合成属性实例变量之后，@synthesize还有哪些使用场景？"></a>在有了自动合成属性实例变量之后，@synthesize还有哪些使用场景？</h2><p>有了自动合成属性实例变量之后，<code>@synthesize</code>还有以下使用场景：</p>
+<ul>
+<li>同时重写了属性的setter和getter方法</li>
+<li>只读属性的getter时</li>
+<li>使用了<code>@dynamic</code>时</li>
+<li>在<code>@protocol</code>中定义的所有属性</li>
+<li>在category中定义的所有属性重载的属性</li>
+<li>当在子类中重载了父类的属性</li>
+</ul>
+<p>在上面的场景中，你必须使用<code>@synthesize</code>来手动合成ivar。</p>
+<h2 id="什么时候会报unrecognized-selector的异常？"><a href="#什么时候会报unrecognized-selector的异常？" class="headerlink" title="什么时候会报unrecognized selector的异常？"></a>什么时候会报unrecognized selector的异常？</h2><p>objc向一个对象发送消息时，runtime库会根据对象的isa指针找到该对象所属的类，然后在该类的方法列表以及父类方法列表中寻找方法运行，如果在最顶层的父类方法列表中依然找不到相应的方法时，程序运行就会挂掉并抛出unrecognized selector的异常。但是在这之前，runtime会有三次拯救程序崩溃的机会。</p>
+<h2 id="objc中向一个nil对象发送消息将会发生什么？"><a href="#objc中向一个nil对象发送消息将会发生什么？" class="headerlink" title="objc中向一个nil对象发送消息将会发生什么？"></a>objc中向一个nil对象发送消息将会发生什么？</h2><p>不会报错，看上去什么都没有发生，但事实上还是发生了一些事情的。</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SomeClass * someObject;</span><br><span class="line">someObject = <span class="literal">nil</span>;</span><br><span class="line">[someObject doSomething];</span><br></pre></td></tr></table></figure>
+<p>就上上面的代码，向nil对象发送了doSomething，OC中nil是被当做0定义的。也就是说runtime要去获取这个nil的对象时，回去读取内存中0的位置，这是肯定不会被允许的，会返回nil，0，0.0等数据，根据返回值类型。</p>
+<p>nil比较容易与僵尸对象混淆，僵尸对象并不是nil，僵尸对象是你的对象被销毁了或则用于其他地方了，但是他的指针依然存在。会发生向一个object发送一个没有的方法。</p>
+<h2 id="一个objc对象的isa指针指向什么？有什么作用？"><a href="#一个objc对象的isa指针指向什么？有什么作用？" class="headerlink" title="一个objc对象的isa指针指向什么？有什么作用？"></a>一个objc对象的isa指针指向什么？有什么作用？</h2><p>一个objc对象的isa指针指向它的类对象，从而可以找到类对象上的方法。</p>
+<p>每个objc对象都有一个隐藏的数据结构，这个数据结构是objcd对象的第一个成员变量，他就是isa指针。它指向一个类对象(class object，记住它是一个对象，是占用内存空间的一个变量，这个对象在编译的时候编译器就生成了，专门来描述某个类的定义)，这个类对象包含了objc对象的一些信息(为了区分两个对象，这里我们称作objc对象)，包含objc对象的方法调度表，实现了什么协议等等。</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Son</span> : <span class="title">Father</span></span></span><br><span class="line">- (<span class="type">id</span>)init</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">self</span> = [<span class="variable language_">super</span> init];</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">self</span>) &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@&quot;%@&quot;</span>, <span class="built_in">NSStringFromClass</span>([<span class="keyword">self</span> <span class="keyword">class</span>]));</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@&quot;%@&quot;</span>, <span class="built_in">NSStringFromClass</span>([<span class="variable language_">super</span> <span class="keyword">class</span>]));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的代码输出都是Son，因为<code>[self class]</code>和<code>[super class]</code>都是以这个Son实例作为参数，去调用自己的class方法或father的class方法，结果发现它们都没有实现，都是调用NSObject的class方法，参数是同一个Son，所以输出的都是Son。</p>
+<h2 id="一个objc对象如何进行内存布局？（考虑有父类的情况）"><a href="#一个objc对象如何进行内存布局？（考虑有父类的情况）" class="headerlink" title="一个objc对象如何进行内存布局？（考虑有父类的情况）"></a>一个objc对象如何进行内存布局？（考虑有父类的情况）</h2><p>所有父类成员变量和父类成员变量都会存放在该对象对应的存储空间中。<br>每个对象内部都有一个isa指针，指向它的类对象，类对象中存放着本对象的：</p>
+<ul>
+<li>对象方法列表（对象能够接受的消息列表，保存在它所对应的类对象中）</li>
+<li>成员变量的列表</li>
+<li>属性列表</li>
+</ul>
+<p>它内部有一个isa指针指向元对象（meta class），元对象内部存放的是类方法列表，类对象内部还有一个superclass的指针，指向他的父类对象。</p>
+<ul>
+<li>根对象就是NSObject，它的superclass指针指向nil。</li>
+<li>类对象既然成为对象，那它也是一个实例。类对象中也有一个isa指针指向它的元类（meta class），即类对象是元类的实例。元类内部存放的是类方法列表，根元类的isa指针指向自己，superclass指针指向NSObject类。</li>
+</ul>
+<h2 id="objc中的类方法和实例方法有什么本质区别和联系？"><a href="#objc中的类方法和实例方法有什么本质区别和联系？" class="headerlink" title="objc中的类方法和实例方法有什么本质区别和联系？"></a>objc中的类方法和实例方法有什么本质区别和联系？</h2><h3 id="类方法"><a href="#类方法" class="headerlink" title="类方法"></a>类方法</h3><ul>
+<li>类方法是属于类对象的</li>
+<li>类方法只能通过类对象调用</li>
+<li>类方法中的self是类对象</li>
+<li>类方法可以调用其他的类方法</li>
+<li>类方法不能访问成员变量</li>
+<li>类方法不能直接调用对象方法</li>
+</ul>
+<h3 id="实例方法"><a href="#实例方法" class="headerlink" title="实例方法"></a>实例方法</h3><ul>
+<li>实例方法是属于实例对象的</li>
+<li>实例方法只能通过实例对象调用</li>
+<li>实例方法中的self是实例对象</li>
+<li>实例方法中可以访问成员变量</li>
+<li>实例方法中直接调用实例方法</li>
+<li>实例方法中可以调用类方法（通过类名）</li>
+</ul>
+<h2 id="objc-msgForward函数是做什么的，直接调用它将会发生什么？"><a href="#objc-msgForward函数是做什么的，直接调用它将会发生什么？" class="headerlink" title="_objc_msgForward函数是做什么的，直接调用它将会发生什么？"></a>_objc_msgForward函数是做什么的，直接调用它将会发生什么？</h2><p>_objc_msgForward是IMP类型，用于消息转发的：当一个对象发送一条消息，但它并没有实现的时候，_objc_msgForward会尝试做消息转发。</p>
+<p>直接调用_objc_msgForward是非常危险的事，如果用不好会导致程序Crash，但是如果用得好，能做非常酷的事。</p>
+<p>一旦调用_objc_msgForward，将调过查找IMP的过程，直接触发“消息转发”，如果调用了_objc_msgForward，即使这个对象确实已经实现了这个方法，也会告诉objc_msgSend：“我没有在这个对象里找到这个方法的实现”。</p>
+<h2 id="能否向编译后得到的类中增加实例变量？能否向运行时创建的类中添加实例变量？为什么？"><a href="#能否向编译后得到的类中增加实例变量？能否向运行时创建的类中添加实例变量？为什么？" class="headerlink" title="能否向编译后得到的类中增加实例变量？能否向运行时创建的类中添加实例变量？为什么？"></a>能否向编译后得到的类中增加实例变量？能否向运行时创建的类中添加实例变量？为什么？</h2><p>不能向编译后得到的类中增加实例变量，能向运行时创建的类中添加实例变量。</p>
+<p>因为编译后的类已经注册在runtime中，类结构体中的objc_ivar_list实例变量的链表和instance_size实例变量的内存大小已经确定，同时runtime会调用class_setIvarLayout或class_setWeakIvarLayout来处理strong weak引用。所以不能向存在的类中添加实例变量。</p>
+<p>运行时创建的类是可以添加实例变量，调用class_addIvar函数。但是得在调用objc_allocateClassPair之后，objc_registerClassPair之前，原因和上面一样。</p>
+<h2 id="runloop和线程有什么关系？"><a href="#runloop和线程有什么关系？" class="headerlink" title="runloop和线程有什么关系？"></a>runloop和线程有什么关系？</h2><ol>
+<li>RunLoop的作用就是来管理线程的，当线程的RunLoop开启后，线程就会在执行完任务后，出于休眠状态，随时等待接收新的任务，而不是退出。</li>
+<li>只有主线程的RunLoop是默认开启的，所以程序在开启后，会一直运行，不会退出。其他线程的RunLoop如果需要开启，就手动开启。</li>
+</ol>
+<h2 id="runloop内部是如何实现的？"><a href="#runloop内部是如何实现的？" class="headerlink" title="runloop内部是如何实现的？"></a>runloop内部是如何实现的？</h2><ol>
+<li>有一个判断循环的条件，满足条件，就一直循环。</li>
+<li>线程得到唤醒事件被唤醒，事件处理完毕后，回到唤醒状态，等待下次唤醒。</li>
+</ol>
+<p>在while里有一个一直监听唤醒时间的东西，监听到就立马处理。之后又循环回来监听，直到满足跳出条件。</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">function loop() &#123;</span><br><span class="line">    initialize();</span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">        var message = get_next_message();</span><br><span class="line">        process_message(message);</span><br><span class="line">    &#125; <span class="keyword">while</span> (message != quit);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="runloop的mode作用是什么？"><a href="#runloop的mode作用是什么？" class="headerlink" title="runloop的mode作用是什么？"></a>runloop的mode作用是什么？</h2><p>runloop主要是用来指定事件在运行循环的优先级，分为：</p>
+<ul>
+<li><code>NSDefaultRunLoopMode</code>：默认，空闲状态</li>
+<li><code>UITrackingRunLoopMode</code>：ScrollView滑动时</li>
+<li><code>UIInitializationRunLoopMode</code>：启动时</li>
+<li><code>NSRunLoopCommonModes</code>：Mode集合</li>
+</ul>
+<p>苹果公开提供的Mode有两个：</p>
+<ul>
+<li><code>NSDefaultRunLoopMode</code></li>
+<li><code>NSRunLoopCommonModes</code></li>
+</ul>
+<h2 id="以scheduledTimerWithTimeInterval的方式触发的timer，在滑动页面上的列表时，timer会暂停回调，为什么？如何解决？"><a href="#以scheduledTimerWithTimeInterval的方式触发的timer，在滑动页面上的列表时，timer会暂停回调，为什么？如何解决？" class="headerlink" title="以scheduledTimerWithTimeInterval的方式触发的timer，在滑动页面上的列表时，timer会暂停回调，为什么？如何解决？"></a>以<code>scheduledTimerWithTimeInterval</code>的方式触发的timer，在滑动页面上的列表时，timer会暂停回调，为什么？如何解决？</h2><p>RunLoop只能运行在一种mode下，如果要换mode，当前的loop也需要停下重启成新的。利用这个机制，scrollView滚动过程中<code>NSDefaultRunLoopMode</code>(<code>kCFRunLoopDefaultMode</code>)的mode会切换到<code>UITrackingRunLoopMode</code>来保证scrollView的流畅滑动：只能在<code>UITrackingRunLoopMode</code>模式下处理的事件会影响scrollView的滑动。</p>
+<p>如果我们把一个NSTimer对象以<code>UITrackingRunLoopMode</code>(<code>kCFRunLoopDefaultMode</code>)添加到主运行循环中的时候，scrollView滚动过程中会因为mode的切换，而导致NSTimer将不再被调度。</p>
+<p>同时因为mode还是可以定制的，所以：<br>NSTimer计时器会被scrollView的滑动影响的问题可以通过将timer添加在<code>NSRunLoopCommonModes</code>（<code>kCFRunLoopCommonModes</code>）来解决。</p>
+<p>这个模式等效于<code>NSDefaultRunLoopMode</code>和<code>NSEventTrackingRunLoopMode</code>的结合。两个模式以数组的形式组合，当只要其中任意一个模式触发，都是这个大模式的触发，都会响应。</p>
+
+    </div>
+  </article>
+
+  <ul class="post-pager">
+    
+    <li class="previous">
+      <a href="/2017/08/06/iOS%E9%AB%98%E7%BA%A7%E5%BC%80%E5%8F%91%E9%9D%A2%E8%AF%95%E9%A2%98%EF%BC%88%E4%B8%8B%EF%BC%89/">← Previous Post</a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2017/08/06/iOS%E9%AB%98%E7%BA%A7%E5%BC%80%E5%8F%91%E9%9D%A2%E8%AF%95%E9%A2%98/">Next Post →</a>
+    </li>
+    
+  </ul>
+
+  <div class="box-section shadow box-comment">
+    <!-- 
+  <section class="disqus-comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </section>
+
+  <script>
+    var disqus_shortname = 'jvaeyhcd';
+    
+    var disqus_url = 'http://example.com/2017/08/06/iOS%E9%AB%98%E7%BA%A7%E5%BC%80%E5%8F%91%E9%9D%A2%E8%AF%95%E9%A2%98%EF%BC%88%E4%B8%AD%EF%BC%89/';
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+  <script id="dsq-count-scr" src="//jvaeyhcd.disqus.com/count.js" async></script>
+
+
+ -->
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<div id="gitalk-container"></div>
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '29d526fe1e0f29d6b28c',
+        clientSecret: '1e5c674f3cbce0ba7d19045138d69ef800d5bd21',
+        id: window.location.pathname,
+        repo: 'jvaeyhcd.github.io',
+        owner: 'Jvaeyhcd',
+        admin: 'Jvaeyhcd'
+    })
+    gitalk.render('gitalk-container')
+</script>
+  </div>
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="layout-footer">
+    <div id="bottom-outer" class="container">
+  <div id="bottom-inner">
+    <span>
+    &copy; 2016-2022 John Doe using
+    <a style="color:#007fff;" target="_blank" rel="noopener" href="http://hexo.io">Hexo</a>.
+    </span>
+    
+      <div class="busuanzi-box">
+        <!-- 不蒜子统计 -->
+        <span id="busuanzi_container_site_pv">
+                本站总访问量<span id="busuanzi_value_site_pv"></span>次
+        </span>
+        <span class="post-meta-divider">|</span>
+        <span id="busuanzi_container_site_uv" style='display:none'>
+                本站访客数<span id="busuanzi_value_site_uv"></span>人
+        </span>
+      </div>
+    
+    <a class="footer-icon" target="_blank" rel="noopener" href="https://github.com/Jvaeyhcd"><i class="fab fa-github"></i></a>
+  </div>
+</div>
+<link href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css" rel="stylesheet">
+<button id="totop" class="back-top">
+  <i class="icon ion-md-arrow-dropup"></i>
+</button>
+
+<script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
+<script src="/js/back-top.js"></script>
+
+  </div>
+</div>
+
+
+
+  <!-- scripts list from theme config.yml -->
+  
+    <script src="/js/dexo.js"></script>
+  
+    <script src="/js/helper.js"></script>
+  
+
+
+</body>
+</html>
